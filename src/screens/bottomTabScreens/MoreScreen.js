@@ -1,6 +1,12 @@
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useContext} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import AppContext from '../../useContext/AppContext';
 
 const MoreScreen = ({navigation}) => {
@@ -15,15 +21,15 @@ const MoreScreen = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={styles.containerView}>
-      <View>
-        {/* // TODO Change this to use FlatList */}
-        <ButtonView text="Billing" />
-        <ButtonView text="Profile" onPress={navigateToUpdateProfileScreen} />
-        <ButtonView text="Settings" />
-        <ButtonView text="Log out" onPress={performLogout} />
-      </View>
-    </SafeAreaView>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.containerView}>
+      {/* // TODO Change this to use FlatList */}
+      <ButtonView text="Billing" />
+      <ButtonView text="Profile" onPress={navigateToUpdateProfileScreen} />
+      <ButtonView text="Settings" />
+      <ButtonView text="Log out" onPress={performLogout} />
+    </ScrollView>
   );
 };
 
@@ -35,7 +41,7 @@ const ButtonView = ({text, onPress}) => {
       <TouchableOpacity style={styles.button} onPress={onPress}>
         <Text style={styles.textContainer}>{text}</Text>
         <Image
-          source={require('../assets/disclosure.png')}
+          source={require('../../assets/disclosure.png')}
           style={styles.disclosureImageStyle}
         />
       </TouchableOpacity>
@@ -47,7 +53,7 @@ const styles = StyleSheet.create({
   containerView: {
     flex: 1,
     paddingVertical: 10,
-    paddingTop: 40,
+    paddingTop: 60,
     backgroundColor: 'white',
   },
   buttonContainer: {
@@ -58,7 +64,7 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray',
     borderLeftWidth: 0,
     borderRightWidth: 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

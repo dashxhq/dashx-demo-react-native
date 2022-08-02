@@ -1,6 +1,6 @@
-import {View, Text, Modal} from 'react-native';
+import {Modal, Text, View} from 'react-native';
+
 import React from 'react';
-import LottieView from 'lottie-react-native';
 
 export default function ModalView({visible}) {
   return (
@@ -21,12 +21,6 @@ export default function ModalView({visible}) {
             marginRight: 50,
             alignItems: 'center',
           }}>
-          <LottieView
-            style={{width: 50, height: 50}}
-            source={require('../assets/loading.json')}
-            autoPlay
-            loop
-          />
           <Text
             style={{
               marginTop: 20,

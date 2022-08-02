@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-import { BUTTON_BACKGROUND_COLOR_PRIMARY } from '../styles/global';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../styles/global';
 
 export default function Button({
   onPress,
@@ -13,6 +13,7 @@ export default function Button({
   return (
     <TouchableOpacity
       onPress={onPress}
+      // eslint-disable-next-line react-native/no-inline-styles
       style={{
         alignItems: 'center',
         backgroundColor: backgroundColor || BUTTON_BACKGROUND_COLOR_PRIMARY,
@@ -24,6 +25,7 @@ export default function Button({
         borderWidth: borderWidth,
       }}>
       <Text
+        // eslint-disable-next-line react-native/no-inline-styles
         style={{
           color: textColor,
           fontSize: 16,

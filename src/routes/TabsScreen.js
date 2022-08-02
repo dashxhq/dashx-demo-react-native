@@ -7,7 +7,7 @@ import MoreScreen from '../screens/bottomTabScreens/MoreScreen';
 
 const TabNavigator = createBottomTabNavigator();
 
-const Tabs = () => {
+const TabsScreen = () => {
   return (
     <TabNavigator.Navigator
       screenOptions={{
@@ -18,11 +18,6 @@ const Tabs = () => {
         tabBarItemStyle: {
           justifyContent: 'center',
           borderRightColor: 'lightgray',
-          borderRightWidth: 1,
-        },
-        tabBarStyle: {
-          borderWidth: 1,
-          borderTopWidth: 1,
         },
       }}>
       <TabNavigator.Screen
@@ -49,4 +44,4 @@ const Tabs = () => {
   );
 };
 
-export default Tabs;
+export default TabsScreen;

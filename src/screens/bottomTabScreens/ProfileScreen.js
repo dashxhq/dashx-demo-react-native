@@ -1,24 +1,23 @@
-import axios from 'axios';
-import React, {useContext, useState} from 'react';
 import {
   Image,
   Platform,
+  ScrollView,
   StyleSheet,
-  Text,
   ToastAndroid,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BASE_URL} from '../../components/APIClient';
-import Button from '../../components/button';
-import InputText from '../../components/inputText';
-import ModalView from '../../components/modal';
-import ShowError from '../../components/showError';
-import validate from '../../components/validator';
+import React, {useContext, useEffect, useState} from 'react';
 import AppContext from '../../useContext/AppContext';
+import {BASE_URL} from '../../components/APIClient';
+import Button from '../../components/Button';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
+import ErrorMessage from '../../components/ErrorMessage';
+import axios from 'axios';
+import validate from '../../components/validator';
 
-const Profile = () => {
+const ProfileScreen = ({navigation}) => {
   const {userToken, user, setUser} = useContext(AppContext);
 
   const [errorMessage, setErrorMessage] = useState({
@@ -27,14 +26,29 @@ const Profile = () => {
     last_name: false,
   });
   const [updateFlag, setUpdateFlag] = useState(false);
-  const [imageFlag, setImageFlag] = useState(true);
+  const [showEditButton, setShowEditButton] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [tempUser, setTempUser] = useState(user || {});
 
-  const showToast = responseDaata => {
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        showEditButton && (
+          <TouchableOpacity onPress={onPressEditProfile}>
+            <Image
+              style={styles.image}
+              source={require('../../assets/edit.png')}
+            />
+          </TouchableOpacity>
+        ),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showEditButton]);
+
+  const showToast = responseData => {
     if (Platform.OS === 'android') {
-      ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
+      ToastAndroid.show(responseData, ToastAndroid.SHORT);
     }
   };
 
@@ -45,14 +59,14 @@ const Profile = () => {
     }));
   };
 
-  const handleImage = () => {
+  const onPressEditProfile = () => {
     setUpdateFlag(true);
-    setImageFlag(false);
+    setShowEditButton(false);
   };
 
   const handleUpdate = () => {
     setUpdateFlag(false);
-    setImageFlag(true);
+    setShowEditButton(true);
   };
 
   const updateProfile = async () => {
@@ -84,7 +98,7 @@ const Profile = () => {
     }
   };
 
-  const validation = () => {
+  const validateAndUpdateProfile = () => {
     let count = 0;
     for (let key in errorMessage) {
       let validationResponse = validate(key, tempUser[key]);
@@ -109,64 +123,45 @@ const Profile = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.container}>
-        <ModalView visible={isModalVisible} />
-        <View style={styles.horizontalStack}>
-          <View style={{alignItems: 'center', marginTop: 40}}>
-            <Text style={styles.title}>Profile</Text>
-          </View>
-          <View style={{marginTop: 40}}>
-            <TouchableOpacity onPress={handleImage}>
-              {imageFlag ? (
-                <Image
-                  style={styles.image}
-                  source={require('../../assets/edit.png')}
-                />
-              ) : null}
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            alignSelf: 'stretch',
-            marginLeft: 20,
-            marginRight: 20,
-          }}>
-          <InputText
-            placeholder={'First Name'}
-            onChangeText={updateField('first_name')}
-            value={tempUser.first_name}
-            error={errorMessage.first_name}
-            editable={updateFlag}
-            autoCapitalize={'words'}
+    <ScrollView style={styles.container}>
+      <ModalView visible={isModalVisible} />
+      <View style={styles.formFieldsContainer}>
+        <InputText
+          placeholder={'First Name'}
+          onChangeText={updateField('first_name')}
+          value={tempUser.first_name}
+          error={errorMessage.first_name}
+          editable={updateFlag}
+          autoCapitalize={'words'}
+        />
+        <ErrorMessage message={errorMessage.first_name} />
+        <InputText
+          placeholder={'Last Name'}
+          onChangeText={updateField('last_name')}
+          value={tempUser.last_name}
+          error={errorMessage.last_name}
+          editable={updateFlag}
+          autoCapitalize={'words'}
+        />
+        <ErrorMessage message={errorMessage.last_name} />
+        <InputText
+          placeholder={'Email'}
+          onChangeText={updateField('email')}
+          value={tempUser.email}
+          error={errorMessage.email}
+          editable={updateFlag}
+          keyboardType={'email-address'}
+        />
+        <ErrorMessage message={errorMessage.email} />
+        {updateFlag && (
+          <Button
+            onPress={validateAndUpdateProfile}
+            textColor={'white'}
+            text={'Update'}
           />
-          <ShowError message={errorMessage.first_name} />
-          <InputText
-            placeholder={'Last Name'}
-            onChangeText={updateField('last_name')}
-            value={tempUser.last_name}
-            error={errorMessage.last_name}
-            editable={updateFlag}
-            autoCapitalize={'words'}
-          />
-          <ShowError message={errorMessage.last_name} />
-          <InputText
-            placeholder={'Email'}
-            onChangeText={updateField('email')}
-            value={tempUser.email}
-            error={errorMessage.email}
-            editable={updateFlag}
-            keyboardType={'email-address'}
-          />
-          <ShowError message={errorMessage.email} />
-          {updateFlag && (
-            <Button onPress={validation} textColor={'white'} text={'Update'} />
-          )}
-        </View>
+        )}
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -175,23 +170,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  horizontalStack: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: 'black',
-    paddingRight: 15,
-  },
   image: {
     width: 30,
     height: 30,
     resizeMode: 'contain',
+    marginRight: 12,
+  },
+  formFieldsContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    marginHorizontal: 12,
   },
 });
 
-export default Profile;
+export default ProfileScreen;

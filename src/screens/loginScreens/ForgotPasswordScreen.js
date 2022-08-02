@@ -1,30 +1,29 @@
-import {View, Text, TouchableOpacity, ToastAndroid} from 'react-native';
 import React, {useState} from 'react';
-import InputText from '../../components/inputText';
-import ShowError from '../../components/showError';
-import validate from '../../components/validator';
-import ModalView from '../../components/modal';
-import axios from 'axios';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Header from '../../components/header';
-import Button from '../../components/button';
+import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {BASE_URL} from '../../components/APIClient';
+import Button from '../../components/Button';
+import Header from '../../components/Header';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
+import ErrorMessage from '../../components/ErrorMessage';
+import axios from 'axios';
+import validate from '../../components/validator';
 
 export default function ForgotPasswordScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState(false);
-  const [modal, setModal] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const showToast = responseDaata => {
-    ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
+  const showToast = responseData => {
+    ToastAndroid.show(responseData, ToastAndroid.SHORT);
   };
 
   const storeEmail = value => {
     setEmail(value);
   };
 
-  const forgot = async () => {
-    setModal(true);
+  const sendForgotPasswordInstructions = async () => {
+    setIsModalVisible(true);
     try {
       await axios({
         method: 'post',
@@ -32,10 +31,10 @@ export default function ForgotPasswordScreen({navigation}) {
         data: JSON.stringify({email: email}),
         headers: {'Content-Type': 'application/json'},
       });
-      setModal(false);
+      setIsModalVisible(false);
       showToast('link was sent to your mail');
     } catch (error) {
-      setModal(false);
+      setIsModalVisible(false);
       if (error?.response?.status === 500) {
         showToast('Internal server error');
       } else {
@@ -45,18 +44,18 @@ export default function ForgotPasswordScreen({navigation}) {
     }
   };
 
-  const validation = () => {
+  const validateAndInvokeForgotPassword = () => {
     let validationResponse = validate('email', email);
     setErrorMessage(validationResponse);
     if (validationResponse === true) {
-      forgot();
+      sendForgotPasswordInstructions();
     }
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       <View style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
-        <ModalView modal={modal} />
+        <ModalView visible={isModalVisible} />
         <Header title={'Forgot Password'} />
         <View
           style={{
@@ -67,14 +66,14 @@ export default function ForgotPasswordScreen({navigation}) {
           }}>
           <InputText
             placeholder={'Email'}
-            onclick={storeEmail}
+            onChangeText={storeEmail}
             firstTextInput={true}
             error={errorMessage}
             keyboardType={'email-address'}
           />
-          <ShowError message={errorMessage} />
+          <ErrorMessage message={errorMessage} />
           <Button
-            onclickFunction={validation}
+            onPress={validateAndInvokeForgotPassword}
             backgroundColor={'blue'}
             textColor={'white'}
             text={'Submit'}
@@ -94,6 +93,6 @@ export default function ForgotPasswordScreen({navigation}) {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

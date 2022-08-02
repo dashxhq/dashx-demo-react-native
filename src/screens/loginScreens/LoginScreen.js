@@ -1,6 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
 import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
@@ -9,20 +6,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BASE_URL} from '../../components/APIClient';
-import Button from '../../components/button';
-import CheckBox from '../../components/checkBox';
-import Header from '../../components/header';
-import InputText from '../../components/inputText';
-import ModalView from '../../components/modal';
-import ShowError from '../../components/showError';
-import validate from '../../components/validator';
 import AppContext from '../../useContext/AppContext';
-import {storeValueForKey} from '../../utils/LocalStorage';
+import {BASE_URL} from '../../components/APIClient';
+import Button from '../../components/Button';
+import CheckBox from '../../components/CheckBox';
+import Header from '../../components/Header';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
+import ErrorMessage from '../../components/ErrorMessage';
+import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import validate from '../../components/validator';
 
 const Login = ({navigation}) => {
-  const {setUser, setUserToken} = useContext(AppContext);
+  const {setUser, setUserToken, setDashXToken} = useContext(AppContext);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [errorMessage, setErrorMessage] = useState({
@@ -32,8 +29,8 @@ const Login = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const showToast = responseDaata => {
-    ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
+  const showToast = responseData => {
+    ToastAndroid.show(responseData, ToastAndroid.SHORT);
   };
 
   const showPassWord = value => {
@@ -41,13 +38,12 @@ const Login = ({navigation}) => {
   };
 
   const storeDetails = token => {
+    //TODO Store DashX token
     let data = jwt_decode(token);
+
     setUser(data.user);
     setUserToken(token);
-  };
-
-  const storeTokenInAsync = async token => {
-    storeValueForKey('userToken', token);
+    setDashXToken(data.dashx_token);
   };
 
   const logIn = async () => {
@@ -63,10 +59,9 @@ const Login = ({navigation}) => {
 
       const token = response.data.token;
       storeDetails(token);
-      storeTokenInAsync(token);
     } catch (error) {
       setIsModalVisible(false);
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         showToast('Incorrect email or password');
       } else {
         showToast('Network error');
@@ -74,7 +69,7 @@ const Login = ({navigation}) => {
     }
   };
 
-  const validation = () => {
+  const validateAndPerformLogin = () => {
     let count = 0;
     for (let key in errorMessage) {
       let validationResponse = validate(key, eval(key));
@@ -97,7 +92,7 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       <View style={styles.container}>
         <Header title={'Sign in to your Account'} />
         <View
@@ -112,18 +107,19 @@ const Login = ({navigation}) => {
             onChangeText={setEmail}
             error={errorMessage.email}
             keyboardType={'email-address'}
+            autoCapitalize={'none'}
           />
-          <ShowError message={errorMessage.email} />
+          <ErrorMessage message={errorMessage.email} />
           <InputText
             placeholder={'Password'}
             onChangeText={setPassword}
             secureText={hidePassword}
             error={errorMessage.password}
           />
-          <ShowError message={errorMessage.password} />
+          <ErrorMessage message={errorMessage.password} />
           <CheckBox onPress={showPassWord} value={hidePassword} />
           <Button
-            onPress={validation}
+            onPress={validateAndPerformLogin}
             backgroundColor={'blue'}
             textColor={'white'}
             text={'Login'}
@@ -145,7 +141,7 @@ const Login = ({navigation}) => {
         </View>
         <ModalView visible={isModalVisible} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -10,7 +10,7 @@ export const storeValueForKey = (key, value) => {
 
 export const getStoredValueForKey = async key => {
   const value = await AsyncStorage.getItem(key);
-  if (!!value) {
+  if (value) {
     try {
       return JSON.parse(value);
     } catch (e) {

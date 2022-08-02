@@ -1,22 +1,21 @@
-import {View, StyleSheet, ToastAndroid} from 'react-native';
 import React, {useState} from 'react';
-import InputText from '../../components/inputText';
-import axios from 'axios';
-import ShowError from '../../components/showError';
-import validate from '../../components/validator';
-import ModalView from '../../components/modal';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Header from '../../components/header';
-import Button from '../../components/button';
-import CheckBox from '../../components/checkBox';
+import {StyleSheet, ToastAndroid, View} from 'react-native';
 import {BASE_URL} from '../../components/APIClient';
+import Button from '../../components/Button';
+import CheckBox from '../../components/CheckBox';
+import Header from '../../components/Header';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
+import ErrorMessage from '../../components/ErrorMessage';
+import axios from 'axios';
+import validate from '../../components/validator';
 
 export default function RegistrationScreen({navigation}) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
-  const [modal, setModal] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
   const [errorMessage, setErrorMessage] = useState({
     firstName: false,
@@ -50,7 +49,7 @@ export default function RegistrationScreen({navigation}) {
   };
 
   const register = async () => {
-    setModal(true);
+    setIsModalVisible(true);
     try {
       const response = await axios({
         method: 'post',
@@ -63,13 +62,13 @@ export default function RegistrationScreen({navigation}) {
         }),
         headers: {'Content-Type': 'application/json'},
       });
-      setModal(false);
+      setIsModalVisible(false);
       showToast(response.data.message);
     } catch (error) {
-      setModal(false);
-      if (error.response.status === 409) {
+      setIsModalVisible(false);
+      if (error?.response?.status === 409) {
         showToast('Email already exist');
-      } else if (error.response.status === 500) {
+      } else if (error?.response?.status === 500) {
         showToast('Internal server error');
       } else {
         showToast('Network error');
@@ -77,7 +76,7 @@ export default function RegistrationScreen({navigation}) {
     }
   };
 
-  const validation = () => {
+  const validateAndRegister = () => {
     let count = 0;
     for (let key in errorMessage) {
       let validationResponse = validate(key, eval(key));
@@ -99,9 +98,9 @@ export default function RegistrationScreen({navigation}) {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       <View style={{flex: 1, alignItems: 'center', backgroundColor: '#FFFFFF'}}>
-        <ModalView modal={modal} />
+        <ModalView visible={isModalVisible} />
         <Header title={'Register'} />
         <View
           style={{
@@ -112,42 +111,42 @@ export default function RegistrationScreen({navigation}) {
           }}>
           <InputText
             placeholder={'First Name'}
-            onclick={storeFirstName}
+            onChangeText={storeFirstName}
             error={errorMessage.firstName}
             firstTextInput={true}
             autoCapitalize={'words'}
           />
-          <ShowError message={errorMessage.firstName} />
+          <ErrorMessage message={errorMessage.firstName} />
           <InputText
             placeholder={'Last Name'}
-            onclick={storeLastName}
+            onChangeText={storeLastName}
             error={errorMessage.lastName}
             autoCapitalize={'words'}
           />
-          <ShowError message={errorMessage.lastName} />
+          <ErrorMessage message={errorMessage.lastName} />
           <InputText
             placeholder={'Email'}
-            onclick={storeEmail}
+            onChangeText={storeEmail}
             error={errorMessage.email}
             keyboardType={'email-address'}
           />
-          <ShowError message={errorMessage.email} />
+          <ErrorMessage message={errorMessage.email} />
           <InputText
             placeholder={'Password'}
-            onclick={storePassword}
+            onChangeText={storePassword}
             secureText={hidePassword}
             error={errorMessage.password}
           />
-          <ShowError message={errorMessage.password} />
+          <ErrorMessage message={errorMessage.password} />
           <CheckBox onPress={showPassWord} value={hidePassword} />
           <Button
-            onclickFunction={validation}
+            onPress={validateAndRegister}
             backgroundColor={'blue'}
             textColor={'white'}
             text={'Register'}
           />
           <Button
-            onclickFunction={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate('Login')}
             backgroundColor={'white'}
             textColor={'blue'}
             text={'Log in'}
@@ -156,7 +155,7 @@ export default function RegistrationScreen({navigation}) {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

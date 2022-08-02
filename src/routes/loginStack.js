@@ -7,7 +7,8 @@ import ForgotPasswordScreen from '../screens/loginScreens/ForgotPasswordScreen';
 import HomeStack from './HomeStack';
 
 const Stack = createStackNavigator();
-function loginStack() {
+
+function LoginStack() {
   return (
     <Stack.Navigator>
       <Stack.Group screenOptions={{presentation: 'modal'}}>
@@ -35,4 +36,4 @@ function loginStack() {
     </Stack.Navigator>
   );
 }
-export default loginStack;
+export default LoginStack;

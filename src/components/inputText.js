@@ -1,5 +1,6 @@
-import {View, Text, TextInput, StyleSheet} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet, TextInput} from 'react-native';
+
+import React from 'react';
 // import {FloatingLabelInput} from 'react-native-floating-label-input';
 
 export default function InputText(props) {
