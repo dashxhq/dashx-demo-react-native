@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {BASE_URL} from '../../components/APIClient';
-import Button from '../../components/Button';
-import Header from '../../components/Header';
-import InputText from '../../components/InputText';
-import ModalView from '../../components/Modal';
+import Button from '../../components/button';
+import Header from '../../components/header';
+import InputText from '../../components/inputText';
+import ModalView from '../../components/modal';
 import ErrorMessage from '../../components/ErrorMessage';
 import axios from 'axios';
 import validate from '../../components/validator';

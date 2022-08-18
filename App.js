@@ -1,13 +1,14 @@
-import AppContext from './src/useContext/AppContext';
 import React, {useEffect, useMemo, useState} from 'react';
-import {getStoredValueForKey, storeValueForKey} from './src/utils/LocalStorage';
-import HomeStack from './src/routes/HomeStack';
 import {NavigationContainer} from '@react-navigation/native';
-import Navigator from './src/routes/LoginStack';
 import {StatusBar} from 'react-native';
+import HomeStack from './src/routes/HomeStack';
+import Navigator from './src/routes/loginStack';
+import AppContext from './src/useContext/AppContext';
+import {getStoredValueForKey, storeValueForKey} from './src/utils/LocalStorage';
 
 function App() {
   const [isProcessed, setIsProcessed] = useState(false);
+  const [getPost, setGetPost] = useState({});
 
   const [user, updateUser] = useState();
   const [userToken, updateUserToken] = useState('');
@@ -48,6 +49,8 @@ function App() {
         user,
         setUser,
         setDashXToken,
+        getPost,
+        setGetPost,
       }}>
       <NavigationContainer>
         <StatusBar translucent backgroundColor={'white'} />

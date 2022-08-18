@@ -8,11 +8,11 @@ import {
 } from 'react-native';
 import AppContext from '../../useContext/AppContext';
 import {BASE_URL} from '../../components/APIClient';
-import Button from '../../components/Button';
-import CheckBox from '../../components/CheckBox';
-import Header from '../../components/Header';
-import InputText from '../../components/InputText';
-import ModalView from '../../components/Modal';
+import Button from '../../components/button';
+import CheckBox from '../../components/checkBox';
+import Header from '../../components/header';
+import InputText from '../../components/inputText';
+import ModalView from '../../components/modal';
 import ErrorMessage from '../../components/ErrorMessage';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
