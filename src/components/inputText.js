@@ -1,7 +1,6 @@
 import {StyleSheet, TextInput} from 'react-native';
 
 import React from 'react';
-// import {FloatingLabelInput} from 'react-native-floating-label-input';
 
 export default function InputText(props) {
   const {
