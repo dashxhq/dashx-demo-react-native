@@ -1,8 +1,4 @@
-@@ -1,135 +1,86 @@
-import {
-  BUTTON_BACKGROUND_COLOR_PRIMARY,
-  globalStyles,
-} from '../../styles/global';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY, globalStyles} from '../styles/global';
 import {
   Alert,
   Image,
@@ -16,11 +12,13 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import DashX from '@dashx/react-native';
-import DocumentPicker from 'react-native-document-picker';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {DisplayActionSheet} from '../utils/LocalStorage';
 
-const TestFileUploadScreen = () => {
+/** Component to test the file upload */
+export const TestFileUploadScreen = () => {
   const [fileUploadInProgress, setFileUploadProgress] = useState(false);
+  const [displayActionSheet, setDisplayActionSheet] = useState(false);
 
   const showToast = text => {
     if (Platform.OS === 'android') {
@@ -33,11 +31,6 @@ const TestFileUploadScreen = () => {
   useEffect(() => {
     (async () => {
       try {
-        await DashX.configure({
-          baseURI: 'https://api.dashx-staging.com/graphql',
-          targetEnvironment: 'staging',
-          publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
-        });
         // const dashXToken = await getStoredValueForKey('dashXToken');
       } catch (e) {
         showToast(`DashX configuration error: ${JSON.stringify(e)}`);
@@ -71,24 +64,26 @@ const TestFileUploadScreen = () => {
           'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
         );
 
+        console.log(JSON.stringify({assetUploadResponse: response}, null, 2));
+
         showToast('Asset uploaded');
       }
     } catch (error) {
-      if (!DocumentPicker.isCancel(error)) {
-        console.log(error);
-        showToast(`Upload asset error: ${JSON.stringify(error)}`);
-      }
+      console.log('Upload error: ', error);
+      showToast(`Upload asset error: ${JSON.stringify(error)}`);
     } finally {
       setFileUploadProgress(false);
     }
   };
-
+  console.log(displayActionSheet);
   return (
     <View style={styles.screenContainer}>
-      <View style={globalStyles.Container}>
-        <Text>Home</Text>
+      {displayActionSheet && <DisplayActionSheet />}
+      <View style={globalStyles.container}>
         <TouchableOpacity
-          onPress={selectFile}
+          onPress={() => {
+            !displayActionSheet && setDisplayActionSheet(true);
+          }}
           style={{
             ...styles.uploadButton,
             ...(fileUploadInProgress && styles.uploadButtonDisabled),
@@ -96,7 +91,7 @@ const TestFileUploadScreen = () => {
           disabled={fileUploadInProgress}>
           <Image
             style={styles.uploadImage}
-            source={require('../../assets/upload.png')}
+            source={require('../../src/assets/upload.png')}
           />
           <Text style={styles.uploadText}>
             {fileUploadInProgress ? 'Uploading' : 'Upload'}
@@ -128,14 +123,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
-
-
   },
   uploadButtonDisabled: {
     opacity: 0.5,
-
-
   },
 });
-
-export default TestFileUploadScreen;

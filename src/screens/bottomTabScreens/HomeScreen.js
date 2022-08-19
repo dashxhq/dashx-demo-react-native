@@ -7,6 +7,7 @@ import AppContext from '../../useContext/AppContext';
 import ShowPosts from '../../components/showPosts';
 import ModalView from '../../components/modal';
 import {getAllPosts} from '../../utils/LocalStorage';
+// import {TestFileUploadScreen} from '../TestFileUploadScreen';
 
 const HomeScreen = () => {
   const {userToken, getPost, setGetPost} = useContext(AppContext);
@@ -29,6 +30,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      {/* <TestFileUploadScreen /> */}
       <View style={styles.container}>
         <ModalView visible={isModalVisible} />
         <CreatePosts

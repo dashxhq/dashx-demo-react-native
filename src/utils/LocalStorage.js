@@ -1,7 +1,9 @@
+import React, {useEffect, useRef} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL} from '../constants/APIClient';
-import {ToastAndroid} from 'react-native';
+import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import ActionSheet from 'react-native-actionsheet';
 
 export const showToast = responseData => {
   ToastAndroid.show(responseData, ToastAndroid.SHORT);
@@ -102,4 +104,52 @@ export const postmethod = async ({endUrl, dataObject, headers}) => {
   } catch (error) {
     return error;
   }
+};
+
+export const DisplayActionSheet = ({onPress}) => {
+  const refActionSheet = useRef(null);
+
+  if (refActionSheet.current) {
+    refActionSheet.current.show();
+  }
+
+  return (
+    <ActionSheet
+      ref={refActionSheet}
+      title={'Choose a profile photo'}
+      options={['camera', 'gallery', 'cancel']}
+      cancelButtonIndex={2}
+      destructiveButtonIndex={1}
+      onPress={index => {
+        if (index === 1) {
+          console.log('gallery');
+        } else if (index === 2) {
+          console.log('canceled');
+        } else {
+          console.log('camera');
+        }
+      }}
+    />
+  );
+  // return (
+  //   <View>
+  //     <ActionSheet
+  //       ref={refActionSheet}
+  //       title={'Choose a profile photo'}
+  //       options={['camera', 'gallery', 'cancel']}
+  //       cancelButtonIndex={2}
+  //       destructiveButtonIndex={1}
+  //       onPress={index => {
+  //         if (index === 1) {
+  //           console.log('gallery');
+  //         } else if (index === 2) {
+  //           console.log('canceled');
+  //         } else {
+  //           console.log('camera');
+  //         }
+  //       }}
+  //     />
+  //     {showActionSheet()}
+  //   </View>
+  // );
 };

@@ -37,6 +37,12 @@ function App() {
       updateUser(storedUser);
       setUserToken(storedUserToken);
 
+      // await DashX.configure({
+      //   baseURI: 'https://api.dashx-staging.com/graphql',
+      //   targetEnvironment: 'staging',
+      //   publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
+      // });
+
       setIsProcessed(true);
     })();
   }, []);

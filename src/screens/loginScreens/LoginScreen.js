@@ -85,7 +85,6 @@ const Login = ({navigation}) => {
         count += 1;
       }
     }
-    console.log({count, errorMessage});
     if (count === Object.keys(errorMessage).length) {
       logIn();
     }
