@@ -11,7 +11,7 @@ import {APIPost} from '../utils/ApiClient';
 import {showToast} from '../utils/LocalStorage';
 import Button from './Button';
 import InputText from './InputText';
-import ShowError from './showError';
+import ErrorMessage from './ErrorMessage';
 import validate from './validator';
 
 export const CreatePostModal = ({visible, dismissModal}) => {
@@ -85,7 +85,7 @@ export const CreatePostModal = ({visible, dismissModal}) => {
               numberOfLines={3}
               editable={!requestInProgress}
             />
-            <ShowError message={errorMessage.newPost} />
+            <ErrorMessage message={errorMessage.newPost} />
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Button

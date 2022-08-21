@@ -11,7 +11,7 @@ import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import Button from '../../components/Button';
 import validate from '../../components/validator';
-import ShowError from '../../components/showError';
+import ErrorMessage from '../../components/ErrorMessage';
 import {APIPost} from '../../utils/ApiClient';
 import ModalView from '../../components/Modal';
 import {showToast} from '../../utils/LocalStorage';
@@ -95,7 +95,7 @@ const ContactUsScreen = ({navigation}) => {
               }}
               error={errorMessage.name}
             />
-            <ShowError message={errorMessage.name} />
+            <ErrorMessage message={errorMessage.name} />
             <InputText
               value={email}
               placeholder={'Email'}
@@ -111,7 +111,7 @@ const ContactUsScreen = ({navigation}) => {
               }}
               error={errorMessage.email}
             />
-            <ShowError message={errorMessage.email} />
+            <ErrorMessage message={errorMessage.email} />
             <InputText
               value={newPost}
               placeholder={'Send us a message'}
@@ -127,7 +127,7 @@ const ContactUsScreen = ({navigation}) => {
               }}
               error={errorMessage.newPost}
             />
-            <ShowError message={errorMessage.newPost} />
+            <ErrorMessage message={errorMessage.newPost} />
 
             <Button
               onPress={() => {
