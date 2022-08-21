@@ -1,22 +1,22 @@
+import axios from 'axios';
+import jwt_decode from 'jwt-decode';
 import React, {useContext, useState} from 'react';
 import {
+  ScrollView,
   StyleSheet,
   Text,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import AppContext from '../../useContext/AppContext';
-import {BASE_URL} from '../../components/APIClient';
 import Button from '../../components/Button';
-import CheckBox from '../../components/CheckBox';
+import ErrorMessage from '../../components/ErrorMessage';
 import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
-import ErrorMessage from '../../components/ErrorMessage';
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
 import validate from '../../components/validator';
+import AppContext from '../../useContext/AppContext';
+import {BASE_URL} from '../../utils/ApiClient';
 
 const Login = ({navigation}) => {
   const {setUser, setUserToken, setDashXToken} = useContext(AppContext);
@@ -26,15 +26,10 @@ const Login = ({navigation}) => {
     email: false,
     password: false,
   });
-  const [hidePassword, setHidePassword] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showToast = responseData => {
     ToastAndroid.show(responseData, ToastAndroid.SHORT);
-  };
-
-  const showPassWord = value => {
-    setHidePassword(!value);
   };
 
   const storeDetails = token => {
@@ -52,7 +47,7 @@ const Login = ({navigation}) => {
       const response = await axios({
         method: 'post',
         url: `${BASE_URL}/login`,
-        data: JSON.stringify({email: email, password: password}),
+        data: JSON.stringify({email, password}),
         headers: {'Content-Type': 'application/json'},
       });
       setIsModalVisible(false);
@@ -85,14 +80,14 @@ const Login = ({navigation}) => {
         count += 1;
       }
     }
-    console.log({count, errorMessage});
+
     if (count === Object.keys(errorMessage).length) {
       logIn();
     }
   };
 
   return (
-    <View style={{flex: 1}}>
+    <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.container}>
         <Header title={'Sign in to your Account'} />
         <View
@@ -113,16 +108,16 @@ const Login = ({navigation}) => {
           <InputText
             placeholder={'Password'}
             onChangeText={setPassword}
-            secureText={hidePassword}
+            secureText
             error={errorMessage.password}
           />
           <ErrorMessage message={errorMessage.password} />
-          <CheckBox onPress={showPassWord} value={hidePassword} />
           <Button
             onPress={validateAndPerformLogin}
             backgroundColor={'blue'}
             textColor={'white'}
             text={'Login'}
+            style={styles.loginActionButton}
           />
           <Button
             onPress={() => navigation.navigate('Registration')}
@@ -131,6 +126,7 @@ const Login = ({navigation}) => {
             text={'Register'}
             borderColor={'blue'}
             borderWidth={1}
+            style={styles.loginActionButton}
           />
           <View style={{alignItems: 'center'}}>
             <TouchableOpacity
@@ -141,7 +137,7 @@ const Login = ({navigation}) => {
         </View>
         <ModalView visible={isModalVisible} />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -155,6 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: 'blue',
+  },
+  loginActionButton: {
+    paddingVertical: 10,
+    marginTop: 20,
   },
 });
 

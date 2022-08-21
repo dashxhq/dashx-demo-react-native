@@ -1,4 +1,5 @@
 import React from 'react';
+import {View, Image, Platform} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/bottomTabScreens/HomeScreen';
 import StoreScreen from '../screens/bottomTabScreens/StoreScreen';
@@ -7,41 +8,87 @@ import MoreScreen from '../screens/bottomTabScreens/MoreScreen';
 
 const TabNavigator = createBottomTabNavigator();
 
-const TabsScreen = () => {
+const Tabs = () => {
   return (
     <TabNavigator.Navigator
       screenOptions={{
-        tabBarIconStyle: {display: 'none'},
         tabBarLabelStyle: {
-          fontSize: 16,
+          fontSize: 14,
         },
         tabBarItemStyle: {
           justifyContent: 'center',
-          borderRightColor: 'lightgray',
+          borderRightColor: '#E8E8E8',
+          borderRightWidth: 1,
+          paddingBottom: Platform.select({ios: 0, android: 5}),
         },
+        tabBarActiveTintColor: 'blue',
       }}>
       <TabNavigator.Screen
         name="Home"
         component={HomeScreen}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <Image
+                source={require('../assets/home.png')}
+                resizeMode="contain"
+                style={{width: 25, tintColor: focused ? 'blue' : null}}
+              />
+            );
+          },
+        }}
       />
       <TabNavigator.Screen
         name="Store"
         component={StoreScreen}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <Image
+                source={require('../assets/store.png')}
+                resizeMode="contain"
+                style={{width: 25, tintColor: focused ? 'blue' : null}}
+              />
+            );
+          },
+        }}
       />
       <TabNavigator.Screen
         name="Bookmarks"
         component={BookmarksScreen}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <Image
+                source={require('../assets/outLinedBookmark.png')}
+                resizeMode="contain"
+                style={{width: 25, tintColor: focused ? 'blue' : null}}
+              />
+            );
+          },
+        }}
       />
       <TabNavigator.Screen
         name="More"
         component={MoreScreen}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <Image
+                source={require('../assets/more.png')}
+                resizeMode="contain"
+                style={{width: 25, tintColor: focused ? 'blue' : null}}
+              />
+            );
+          },
+        }}
       />
     </TabNavigator.Navigator>
   );
 };
 
-export default TabsScreen;
+export default Tabs;

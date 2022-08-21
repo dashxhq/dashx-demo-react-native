@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {BASE_URL} from '../../components/APIClient';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
@@ -77,6 +83,7 @@ export default function ForgotPasswordScreen({navigation}) {
             backgroundColor={'blue'}
             textColor={'white'}
             text={'Submit'}
+            style={styles.actionButton}
           />
           <View style={{alignItems: 'center'}}>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -96,3 +103,10 @@ export default function ForgotPasswordScreen({navigation}) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  actionButton: {
+    paddingVertical: 10,
+    marginTop: 20,
+  },
+});

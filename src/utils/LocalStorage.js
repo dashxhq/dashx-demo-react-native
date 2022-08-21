@@ -1,4 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert, Platform, ToastAndroid} from 'react-native';
+
+export const showToast = text => {
+  if (Platform.OS === 'android') {
+    ToastAndroid.show(text, ToastAndroid.SHORT);
+  } else {
+    Alert.alert('DashX', text);
+  }
+};
 
 export const storeValueForKey = (key, value) => {
   if (value) {

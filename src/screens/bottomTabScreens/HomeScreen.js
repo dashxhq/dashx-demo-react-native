@@ -1,135 +1,107 @@
-import {
-  BUTTON_BACKGROUND_COLOR_PRIMARY,
-  globalStyles,
-} from '../../styles/global';
-import {
-  Alert,
-  Image,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import DashX from '@dashx/react-native';
-import DocumentPicker from 'react-native-document-picker';
-import {launchImageLibrary} from 'react-native-image-picker';
+import React, {useState, useEffect, useContext} from 'react';
+import {Text, View, FlatList, StyleSheet} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Button from '../../components/Button';
+import {CreatePostModal} from '../../components/CreatePost';
+import AppContext from '../../useContext/AppContext';
+import {Post} from '../../components/Post';
+import ModalView from '../../components/Modal';
+import {useIsFocused} from '@react-navigation/native';
+import {getAllPosts} from '../../utils/ApiClient';
+import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
 
 const HomeScreen = () => {
-  const [fileUploadInProgress, setFileUploadProgress] = useState(false);
-
-  const showToast = text => {
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(text, ToastAndroid.SHORT);
-    } else {
-      Alert.alert('DashX', text);
-    }
-  };
+  const {userToken, posts, setPosts} = useContext(AppContext);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [showDataRefreshView, setShowDataRefreshView] = useState(false);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     (async () => {
-      try {
-        await DashX.configure({
-          baseURI: 'https://api.dashx-staging.com/graphql',
-          targetEnvironment: 'staging',
-          publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
-        });
-        // const dashXToken = await getStoredValueForKey('dashXToken');
-      } catch (e) {
-        showToast(`DashX configuration error: ${JSON.stringify(e)}`);
+      if (isFocused) {
+        setShowDataRefreshView(true);
+        setPosts(await getAllPosts(userToken));
+        setShowDataRefreshView(false);
       }
     })();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
-  const selectFile = async () => {
-    try {
-      const checkPermission = async () => {
-        if (Platform.OS === 'android') {
-          const storageReadPermissionStatus = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          );
+  const didBeginToggleBookmark = async item => {
+    // Optimistically update posts
+    setPosts(oldPosts =>
+      oldPosts.map(post => (post.id === item.id ? item : post)),
+    );
+  };
 
-          return storageReadPermissionStatus === 'granted';
-        } else {
-          //TODO Does iOS need runtime permission too? Incorporate in that case.
-          return true;
-        }
-      };
+  const didFinishToggleBookmark = async (item, errorOccurred) => {
+    // Update the posts in case of error to revert to previous state
+    if (errorOccurred) {
+      setPosts(oldPosts =>
+        oldPosts.map(post => (post.id === item.id ? item : post)),
+      );
+    }
+  };
 
-      if (await checkPermission()) {
-        const {
-          assets: [imagePickerResponse],
-        } = await launchImageLibrary();
+  const dismissCreatePostModal = async postCreated => {
+    setShowCreatePostModal(false);
 
-        setFileUploadProgress(true);
-        const response = await DashX.uploadExternalAsset(
-          imagePickerResponse,
-          'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
-        );
-
-        showToast('Asset uploaded');
-      }
-    } catch (error) {
-      if (!DocumentPicker.isCancel(error)) {
-        console.log(error);
-        showToast(`Upload asset error: ${JSON.stringify(error)}`);
-      }
-    } finally {
-      setFileUploadProgress(false);
+    if (postCreated) {
+      setShowDataRefreshView(true);
+      setPosts(await getAllPosts(userToken));
+      setShowDataRefreshView(false);
     }
   };
 
   return (
-    <View style={styles.screenContainer}>
-      <View style={globalStyles.Container}>
-        <Text>Home</Text>
-        <TouchableOpacity
-          onPress={selectFile}
-          style={{
-            ...styles.uploadButton,
-            ...(fileUploadInProgress && styles.uploadButtonDisabled),
+    <SafeAreaView style={styles.container}>
+      {showCreatePostModal && (
+        <CreatePostModal dismissModal={dismissCreatePostModal} />
+      )}
+      <View style={styles.titleView}>
+        <Text style={styles.titleText}>Posts</Text>
+        <Button
+          onPress={() => {
+            setShowCreatePostModal(true);
           }}
-          disabled={fileUploadInProgress}>
-          <Image
-            style={styles.uploadImage}
-            source={require('../../assets/upload.png')}
-          />
-          <Text style={styles.uploadText}>
-            {fileUploadInProgress ? 'Uploading' : 'Upload'}
-          </Text>
-        </TouchableOpacity>
+          textColor={'white'}
+          text={'Add Post'}
+        />
       </View>
-    </View>
+      {showDataRefreshView && <RefreshIndicatorView />}
+      <View style={{flex: 1}}>
+        <FlatList
+          data={posts}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => (
+            <Post
+              item={item}
+              didBeginToggleBookmark={didBeginToggleBookmark}
+              didFinishToggleBookmark={didFinishToggleBookmark}
+            />
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  screenContainer: {flex: 1},
-  uploadText: {
-    color: 'black',
-    fontSize: 18,
-    fontWeight: '500',
-    marginRight: 10,
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
   },
-  uploadImage: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
-  },
-  uploadButton: {
-    marginTop: 20,
-    backgroundColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 5,
+  titleView: {
+    flex: 0.1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
-  uploadButtonDisabled: {
-    opacity: 0.5,
+  titleText: {
+    fontSize: 24,
+    color: 'black',
+    fontWeight: '700',
   },
 });
 
