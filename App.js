@@ -5,10 +5,11 @@ import HomeStack from './src/routes/HomeStack';
 import Navigator from './src/routes/loginStack';
 import AppContext from './src/useContext/AppContext';
 import {getStoredValueForKey, storeValueForKey} from './src/utils/LocalStorage';
+import DashX from '@dashx/react-native';
 
 function App() {
   const [isProcessed, setIsProcessed] = useState(false);
-  const [getPost, setGetPost] = useState({});
+  const [posts, setPosts] = useState([]);
 
   const [user, updateUser] = useState();
   const [userToken, updateUserToken] = useState('');
@@ -37,11 +38,11 @@ function App() {
       updateUser(storedUser);
       setUserToken(storedUserToken);
 
-      // await DashX.configure({
-      //   baseURI: 'https://api.dashx-staging.com/graphql',
-      //   targetEnvironment: 'staging',
-      //   publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
-      // });
+      await DashX.configure({
+        baseURI: 'https://api.dashx-staging.com/graphql',
+        targetEnvironment: 'staging',
+        publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
+      });
 
       setIsProcessed(true);
     })();
@@ -55,11 +56,15 @@ function App() {
         user,
         setUser,
         setDashXToken,
-        getPost,
-        setGetPost,
+        posts,
+        setPosts,
       }}>
       <NavigationContainer>
-        <StatusBar translucent backgroundColor={'white'} />
+        <StatusBar
+          translucent
+          backgroundColor={'white'}
+          barStyle="light-content"
+        />
         {isProcessed && isLoggedIn && <HomeStack />}
         {isProcessed && !isLoggedIn && <Navigator />}
       </NavigationContainer>

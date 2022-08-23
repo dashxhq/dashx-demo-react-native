@@ -7,24 +7,19 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Header from '../../components/header';
-import InputText from '../../components/inputText';
-import Button from '../../components/button';
+import Header from '../../components/Header';
+import InputText from '../../components/InputText';
+import Button from '../../components/Button';
 import validate from '../../components/validator';
-import ShowError from '../../components/showError';
-import {postmethod} from '../../utils/LocalStorage';
+import ErrorMessage from '../../components/ErrorMessage';
+import {APIPost} from '../../utils/ApiClient';
+import ModalView from '../../components/Modal';
 import {showToast} from '../../utils/LocalStorage';
-import ModalView from '../../components/modal';
 
 const ContactUsScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [newPost, setMessage] = useState('');
-  const [inputField, setInputField] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
   const [errorMessage, setErrorMessage] = useState({
     name: false,
     email: false,
@@ -34,23 +29,20 @@ const ContactUsScreen = ({navigation}) => {
 
   const contactUs = async () => {
     setIsModalVisible(true);
-    const response = await postmethod({
+
+    await APIPost({
       endUrl: 'contact',
       dataObject: {
         name: name,
         email: email,
         feedback: newPost,
       },
-      headers: {'Content-Type': 'application/json'},
     });
-    if (response.status === 200) {
-      setIsModalVisible(false);
-      showToast('Thanks for reaching out! We will get back to you soon.');
-    } else {
-      if (response?.response?.status === 500) {
-        showToast('Internal server error');
-      }
-    }
+
+    setIsModalVisible(false);
+    showToast('Thanks for reaching out! We will get back to you soon.');
+
+    // Clear the form
     setName();
     setEmail();
     setMessage();
@@ -103,7 +95,7 @@ const ContactUsScreen = ({navigation}) => {
               }}
               error={errorMessage.name}
             />
-            <ShowError message={errorMessage.name} />
+            <ErrorMessage message={errorMessage.name} />
             <InputText
               value={email}
               placeholder={'Email'}
@@ -119,7 +111,7 @@ const ContactUsScreen = ({navigation}) => {
               }}
               error={errorMessage.email}
             />
-            <ShowError message={errorMessage.email} />
+            <ErrorMessage message={errorMessage.email} />
             <InputText
               value={newPost}
               placeholder={'Send us a message'}
@@ -135,7 +127,7 @@ const ContactUsScreen = ({navigation}) => {
               }}
               error={errorMessage.newPost}
             />
-            <ShowError message={errorMessage.newPost} />
+            <ErrorMessage message={errorMessage.newPost} />
 
             <Button
               onPress={() => {

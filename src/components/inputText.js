@@ -12,6 +12,8 @@ const InputText = props => {
     keyboardType,
     autoCapitalize,
     onFocus,
+    style,
+    ...rest
   } = props;
   return (
     <TextInput
@@ -21,12 +23,14 @@ const InputText = props => {
       value={value}
       onChangeText={onChangeText}
       onFocus={onFocus}
-      style={[
-        styles.textInputStyle,
-        {borderColor: error === false || error === true ? 'grey' : 'red'},
-        {marginTop: firstTextInput ? 0 : 20},
-      ]}
+      style={{
+        ...styles.textInputStyle,
+        ...{borderColor: error === false || error === true ? 'grey' : 'red'},
+        ...{marginTop: firstTextInput ? 0 : 20},
+        ...style,
+      }}
       autoCapitalize={autoCapitalize}
+      {...rest}
     />
   );
 };
@@ -34,9 +38,8 @@ const InputText = props => {
 const styles = StyleSheet.create({
   textInputStyle: {
     alignSelf: 'stretch',
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 5,
-    paddingVertical: 10,
     paddingHorizontal: 12,
   },
 });
