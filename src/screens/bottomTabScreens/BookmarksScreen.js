@@ -1,63 +1,55 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Text, View, Image, FlatList, StyleSheet} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BASE_URL} from '../../constants/APIClient';
-import axios from 'axios';
-import AppContext from '../../useContext/AppContext';
-import ShowPosts from '../../components/showPosts';
 import {useIsFocused} from '@react-navigation/core';
-import ModalView from '../../components/modal';
-import {showToast} from '../../utils/LocalStorage';
-import {getMethod} from '../../utils/LocalStorage';
+import React, {useEffect, useState} from 'react';
+import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Post} from '../../components/Post';
+import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
+import {APIGet} from '../../utils/ApiClient';
 
 const BookmarksScreen = () => {
-  const {userToken, setGetPost} = useContext(AppContext);
-  const [bookmarks, setBookmarks] = useState({});
-  const [bookmarksData, setBookmarksData] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
+  const [showDataRefreshView, setShowDataRefreshView] = useState(false);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
-      getUserbookmarks();
+      getUserBookmarks();
     }
   }, [isFocused]);
 
-  const getUserbookmarks = async () => {
-    setIsModalVisible(true);
-    const response = await getMethod({
+  const getUserBookmarks = async () => {
+    setShowDataRefreshView(true);
+
+    const response = await APIGet({
       endUrl: 'posts/bookmarked',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
-      },
     });
-    if (response.status === 200) {
-      setIsModalVisible(false);
-      setBookmarks(response.data);
-    } else {
-      if (response?.response?.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
+    setBookmarkedPosts(response.posts);
+
+    setShowDataRefreshView(false);
+  };
+
+  const didBeginToggleBookmark = async item => {
+    // Optimistically update posts
+    setBookmarkedPosts(oldPosts =>
+      oldPosts.filter(post => post.id !== item.id),
+    );
+  };
+
+  const didFinishToggleBookmark = async (item, errorOccurred) => {
+    // Re-add the post to bookmarks in case toggle failed
+    if (errorOccurred) {
+      setBookmarkedPosts(oldPosts => [...oldPosts, item]);
     }
   };
 
-  useEffect(() => {
-    if (Object.keys(bookmarks).length > 0) {
-      setBookmarksData(bookmarks);
-    }
-  }, [bookmarks]);
-
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.container}>
+      {showDataRefreshView && <RefreshIndicatorView />}
       <View style={styles.container}>
-        <ModalView visible={isModalVisible} />
         <View style={styles.bookmarksTitleView}>
           <Text style={styles.bookmarksTitle}>Bookmarks</Text>
         </View>
-        {bookmarksData.length === 0 || bookmarksData['posts'].length === 0 ? (
+        {!showDataRefreshView && bookmarkedPosts.length === 0 ? (
           <View style={styles.bookmarksEmptyView}>
             <Image source={require('../../assets/info.png')} />
             <Text style={{...styles.text, color: 'black'}}>No bookmarks</Text>
@@ -66,13 +58,12 @@ const BookmarksScreen = () => {
         ) : (
           <View style={styles.bookmarksView}>
             <FlatList
-              data={bookmarksData.posts}
-              renderItem={({item}) => (
-                <ShowPosts
+              data={bookmarkedPosts}
+              renderItem={({item, index}) => (
+                <Post
                   item={item}
-                  setIsModalVisible={setIsModalVisible}
-                  setGetPost={setGetPost}
-                  getUserbookmarks={getUserbookmarks}
+                  didBeginToggleBookmark={didBeginToggleBookmark}
+                  didFinishToggleBookmark={didFinishToggleBookmark}
                 />
               )}
             />

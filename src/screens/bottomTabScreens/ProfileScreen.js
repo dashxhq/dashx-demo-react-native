@@ -1,60 +1,45 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import DashX from '@dashx/react-native';
+import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   Keyboard,
   LogBox,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Button from '../../components/button';
-import InputText from '../../components/inputText';
-import ModalView from '../../components/modal';
+import {FilePickerActionSheet} from '../../components/ActionSheet';
+import Button from '../../components/Button';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
 import ShowError from '../../components/showError';
 import validate from '../../components/validator';
-import AppContext from '../../useContext/AppContext';
+import {APIGet, APIPatch} from '../../utils/ApiClient';
 import {showToast} from '../../utils/LocalStorage';
-import DocumentPicker from 'react-native-document-picker';
-import {patchMethod} from '../../utils/LocalStorage';
-import {getMethod} from '../../utils/LocalStorage';
-import {TestFileUploadScreen} from '../TestFileUploadScreen';
 
-const Profile = () => {
-  const {userToken} = useContext(AppContext);
+const Profile = ({navigation}) => {
   const [errorMessage, setErrorMessage] = useState({
     email: false,
     first_name: false,
     last_name: false,
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [updateUser, setUpdateUser] = useState();
-  const [image, setImage] = useState('asd');
+  const [user, setUser] = useState();
+  const [avatarImage, setAvatarImage] = useState();
+  const [fileUploadInProgress, setFileUploadProgress] = useState(false);
+  const [displayActionSheet, setDisplayActionSheet] = useState(false);
 
   const getProfile = async () => {
     setIsModalVisible(true);
-    const response = await getMethod({
+
+    const response = await APIGet({
       endUrl: 'profile',
-      headers: {
-        'Content-type': 'application/json',
-        Authorization: 'Bearer '.concat(userToken),
-      },
     });
-    if (response.status === 200) {
-      setIsModalVisible(false);
-      setUpdateUser(response.data.user);
-    } else {
-      setIsModalVisible(false);
-      if (error?.response?.status === 401) {
-        showToast('Unauthorized');
-      } else if (error?.response?.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
-    }
+    setUser(response.user);
+
+    setIsModalVisible(false);
   };
 
   useEffect(() => {
@@ -63,10 +48,11 @@ const Profile = () => {
       'Animated: `useNativeDriver`',
       'componentWillReceiveProps',
     ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateField = fieldKey => fieldValue => {
-    setUpdateUser(old => ({
+    setUser(old => ({
       ...old,
       [fieldKey]: fieldValue,
     }));
@@ -74,33 +60,22 @@ const Profile = () => {
 
   const updateProfile = async () => {
     setIsModalVisible(true);
-    const response = await patchMethod({
+
+    await APIPatch({
       endUrl: 'update-profile',
-      dataObject: updateUser,
-      headers: {
-        'Content-type': 'application/json',
-        Authorization: 'Bearer '.concat(userToken),
-      },
+      dataObject: user,
     });
-    if (response.status === 200) {
-      setIsModalVisible(false);
-      showToast('Profile Successfully Updated');
-    } else {
-      setIsModalVisible(false);
-      if (error?.response?.status === 401) {
-        showToast('Unauthorized');
-      } else if (error?.response?.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
-    }
+
+    setIsModalVisible(false);
+
+    showToast('Profile Successfully Updated');
+    navigation.goBack();
   };
 
   const validation = () => {
     let count = 0;
     for (let key in errorMessage) {
-      let validationResponse = validate(key, updateUser[key]);
+      let validationResponse = validate(key, user[key]);
       setErrorMessage(prev => {
         return {
           ...prev,
@@ -119,55 +94,48 @@ const Profile = () => {
     }
   };
 
-  const selectFile = async () => {
+  const onPickAvatarImage = async pickedImage => {
+    setAvatarImage(pickedImage.uri);
+    setDisplayActionSheet(false);
+    setFileUploadProgress(true);
+
     try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
-      });
-      setImage(res[0]['uri']);
-      setUpdateUser(prev => {
-        return {...prev, avatar: res[0]['uri']};
-      });
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        showToast('Canceld');
-      } else {
-        showToast('Unknown Error');
-        throw err;
-      }
+      const response = await DashX.uploadExternalAsset(
+        pickedImage,
+        'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
+      );
+
+      setFileUploadProgress(false);
+
+      setUser(oldUser => ({...(oldUser || {}), avatar: response?.data?.asset}));
+
+      showToast('Asset uploaded');
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const onPressAvatarButton = async () => {
+    setDisplayActionSheet(true);
   };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      {/* <SafeAreaView style={{flex: 1}}> */}
-
       <View style={styles.container}>
-        <TestFileUploadScreen />
         <ModalView visible={isModalVisible} />
-        {/* <View style={styles.titleView}>
-            <Text style={styles.title}>Profile</Text>
-          </View> */}
-        <View style={styles.avatar}>
-          <Image
-            source={{
-              uri: image,
-            }}
-            style={{width: 80, height: 80, borderRadius: 40}}
-          />
-          <TouchableOpacity
-            onPress={selectFile}
-            style={{position: 'absolute', right: 0, bottom: 0}}>
-            <Image
-              style={styles.imageLogo}
-              source={require('../../assets/addPhoto.png')}
-            />
-          </TouchableOpacity>
-        </View>
+        {displayActionSheet && (
+          <FilePickerActionSheet onPickFile={onPickAvatarImage} />
+        )}
+        <AvatarView
+          avatarImage={avatarImage || user?.avatar?.url}
+          onPress={onPressAvatarButton}
+          showLoader={fileUploadInProgress}
+          disabled={fileUploadInProgress}
+        />
         <View style={styles.textFieldView}>
           <InputText
             onChangeText={updateField('first_name')}
-            value={updateUser?.first_name}
+            value={user?.first_name}
             error={errorMessage.first_name}
             autoCapitalize={'words'}
             onFocus={() => {
@@ -182,7 +150,7 @@ const Profile = () => {
           <ShowError message={errorMessage.first_name} />
           <InputText
             onChangeText={updateField('last_name')}
-            value={updateUser?.last_name}
+            value={user?.last_name}
             error={errorMessage.last_name}
             autoCapitalize={'words'}
             onFocus={() => {
@@ -197,7 +165,7 @@ const Profile = () => {
           <ShowError message={errorMessage.last_name} />
           <InputText
             onChangeText={updateField('email')}
-            value={updateUser?.email}
+            value={user?.email}
             error={errorMessage.email}
             keyboardType={'email-address'}
             onFocus={() => {
@@ -217,11 +185,40 @@ const Profile = () => {
             }}
             textColor={'white'}
             text={'Update'}
+            disabled={fileUploadInProgress}
+            style={styles.updateButton}
           />
         </View>
       </View>
-      {/* </SafeAreaView> */}
     </TouchableWithoutFeedback>
+  );
+};
+
+const AvatarView = ({avatarImage, onPress, showLoader, ...rest}) => {
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.avatar} {...rest}>
+      <Image
+        source={{
+          uri: avatarImage,
+        }}
+        style={styles.avatarImage}
+      />
+      {!avatarImage && (
+        <View style={styles.imageLogoContainer}>
+          <Image
+            style={styles.imageLogo}
+            source={require('../../assets/addPhoto.png')}
+          />
+        </View>
+      )}
+      {showLoader && (
+        <ActivityIndicator
+          size="small"
+          color="white"
+          style={styles.avatarActivityIndicator}
+        />
+      )}
+    </TouchableOpacity>
   );
 };
 
@@ -230,30 +227,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  // titleView: {
-  //   marginLeft: 20,
-  // },
-  // title: {
-  //   fontSize: 20,
-  //   fontWeight: '600',
-  //   color: 'black',
-  // },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'lightgrey',
-    alignSelf: 'center',
+  updateButton: {
     marginTop: 20,
-  },
-  imageLogo: {
-    width: 30,
-    height: 30,
+    paddingVertical: 15,
   },
   textFieldView: {
     flex: 1,
     alignSelf: 'stretch',
     marginHorizontal: 20,
+  },
+
+  // Avatar image
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'lightgray',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    elevation: 5,
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  imageLogo: {
+    width: 30,
+    height: 30,
+  },
+  imageLogoContainer: {
+    position: 'absolute',
+    height: 30,
+    width: 30,
+  },
+  avatarActivityIndicator: {
+    position: 'absolute',
+    verticalAlign: 'middle',
+    alignSelf: 'center',
   },
 });
 

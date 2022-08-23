@@ -39,7 +39,7 @@ const ButtonView = ({text, onPress}) => {
   return (
     <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.textContainer}>{text}</Text>
+        <Text style={styles.text}>{text}</Text>
         <Image
           source={require('../../assets/disclosure.png')}
           style={styles.disclosureImageStyle}
@@ -69,9 +69,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  textContainer: {
+  text: {
     textAlign: 'left',
     paddingVertical: 10,
+    fontSize: 16,
     color: 'gray',
   },
   disclosureImageStyle: {

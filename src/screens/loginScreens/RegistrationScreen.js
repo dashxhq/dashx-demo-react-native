@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
-import {StyleSheet, ToastAndroid, View} from 'react-native';
+import {ScrollView, StyleSheet, ToastAndroid, View} from 'react-native';
 import {BASE_URL} from '../../components/APIClient';
-import Button from '../../components/button';
-import CheckBox from '../../components/checkBox';
-import Header from '../../components/header';
-import InputText from '../../components/inputText';
-import ModalView from '../../components/modal';
+import Button from '../../components/Button';
+import Header from '../../components/Header';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
 import ErrorMessage from '../../components/ErrorMessage';
 import axios from 'axios';
 import validate from '../../components/validator';
@@ -16,7 +15,6 @@ export default function RegistrationScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [hidePassword, setHidePassword] = useState(true);
   const [errorMessage, setErrorMessage] = useState({
     firstName: false,
     lastName: false,
@@ -24,8 +22,8 @@ export default function RegistrationScreen({navigation}) {
     password: false,
   });
 
-  const showToast = responseDaata => {
-    ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
+  const showToast = text => {
+    ToastAndroid.show(text, ToastAndroid.SHORT);
   };
 
   const storeFirstName = value => {
@@ -42,10 +40,6 @@ export default function RegistrationScreen({navigation}) {
 
   const storePassword = value => {
     setPassWord(value);
-  };
-
-  const showPassWord = value => {
-    setHidePassword(!value);
   };
 
   const register = async () => {
@@ -98,7 +92,7 @@ export default function RegistrationScreen({navigation}) {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <View style={{flex: 1, alignItems: 'center', backgroundColor: '#FFFFFF'}}>
         <ModalView visible={isModalVisible} />
         <Header title={'Register'} />
@@ -134,28 +128,29 @@ export default function RegistrationScreen({navigation}) {
           <InputText
             placeholder={'Password'}
             onChangeText={storePassword}
-            secureText={hidePassword}
+            secureText
             error={errorMessage.password}
           />
           <ErrorMessage message={errorMessage.password} />
-          <CheckBox onPress={showPassWord} value={hidePassword} />
           <Button
             onPress={validateAndRegister}
             backgroundColor={'blue'}
             textColor={'white'}
             text={'Register'}
+            style={styles.registerActionButton}
           />
           <Button
             onPress={() => navigation.navigate('Login')}
             backgroundColor={'white'}
             textColor={'blue'}
-            text={'Log in'}
+            text={'Login'}
             borderColor={'blue'}
             borderWidth={1}
+            style={styles.registerActionButton}
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -182,5 +177,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     width: 50,
     height: 50,
+  },
+  registerActionButton: {
+    paddingVertical: 10,
+    marginTop: 20,
   },
 });
