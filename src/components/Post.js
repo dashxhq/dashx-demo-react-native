@@ -1,14 +1,26 @@
-import React, {useContext} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import moment from 'moment';
 import AppContext from '../useContext/AppContext';
 import {APIPut} from '../utils/ApiClient';
+import Video from 'react-native-video';
+import {ImageAndVideoModal} from './ImageAndVideoModal';
 
 export const Post = ({
   item,
   didBeginToggleBookmark,
   didFinishToggleBookmark,
 }) => {
+  const [modal, setModal] = useState(false);
+  const [imageOrVideoUri, setImageOrVideoUri] = useState('');
+
   const toggleBookmark = async () => {
     // Temporarily set the bookmarked_at field to optimistically update the UI
     const bookmarked_at = item.bookmarked_at ? null : moment().toISOString();
@@ -44,6 +56,57 @@ export const Post = ({
               Posted {moment(item.created_at).fromNow()}
             </Text>
             <Text style={styles.text}>{item.text}</Text>
+            <View style={{marginTop: 5, flexDirection: 'row'}}>
+              <ImageAndVideoModal
+                visible={modal}
+                setModal={setModal}
+                imageOrVideoUri={imageOrVideoUri}
+              />
+              {item?.image?.url && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setModal(true);
+                    setImageOrVideoUri({
+                      mediaType: 'image',
+                      uri: item?.image?.url,
+                    });
+                  }}>
+                  <Image
+                    style={{width: 80, height: 100, marginRight: 20}}
+                    source={{uri: item?.image?.url}}
+                  />
+                </TouchableOpacity>
+              )}
+              {item?.video?.url && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setModal(true);
+                    setImageOrVideoUri({
+                      mediaType: 'video',
+                      uri: item?.video?.url,
+                    });
+                  }}>
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Video
+                      style={{
+                        width: 80,
+                        height: 100,
+                      }}
+                      source={{uri: item?.video?.url}}
+                    />
+                    <Image
+                      style={{position: 'absolute', tintColor: 'white'}}
+                      source={require('../assets/playCircle.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           <View style={{flex: 0.1}}>

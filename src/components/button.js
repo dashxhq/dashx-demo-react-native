@@ -11,6 +11,7 @@ const Button = ({
   borderWidth,
   style = {},
   disabled,
+  size,
   ...rest
 }) => {
   return (
@@ -27,7 +28,9 @@ const Button = ({
       }}
       disabled={disabled}
       {...rest}>
-      <Text style={{...styles.text, color: textColor}}>{text}</Text>
+      <Text style={{...styles.text, color: textColor, fontSize: size}}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -36,11 +39,11 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     borderRadius: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '500',
   },
 });

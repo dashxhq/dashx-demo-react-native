@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {StatusBar} from 'react-native';
+import {LogBox, StatusBar} from 'react-native';
 import HomeStack from './src/routes/HomeStack';
 import Navigator from './src/routes/loginStack';
 import AppContext from './src/useContext/AppContext';
@@ -46,6 +46,7 @@ function App() {
 
       setIsProcessed(true);
     })();
+    LogBox.ignoreAllLogs();
   }, []);
 
   return (
@@ -62,7 +63,7 @@ function App() {
       <NavigationContainer>
         <StatusBar
           translucent
-          backgroundColor={'white'}
+          backgroundColor={'black'}
           barStyle="light-content"
         />
         {isProcessed && isLoggedIn && <HomeStack />}

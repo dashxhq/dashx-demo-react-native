@@ -63,7 +63,12 @@ const Profile = ({navigation}) => {
 
     await APIPatch({
       endUrl: 'update-profile',
-      dataObject: user,
+      dataObject: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar: user.avatar.url,
+      },
     });
 
     setIsModalVisible(false);
@@ -124,8 +129,13 @@ const Profile = ({navigation}) => {
       <View style={styles.container}>
         <ModalView visible={isModalVisible} />
         {displayActionSheet && (
-          <FilePickerActionSheet onPickFile={onPickAvatarImage} />
+          <FilePickerActionSheet
+            onPickFile={onPickAvatarImage}
+            setDisplayActionSheet={setDisplayActionSheet}
+            imageOrVideoText="image"
+          />
         )}
+
         <AvatarView
           avatarImage={avatarImage || user?.avatar?.url}
           onPress={onPressAvatarButton}

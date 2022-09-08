@@ -28,7 +28,6 @@ const processNetworkError = error => {
 
 export const APIGet = async ({endUrl, headers}) => {
   const finalHeaders = await normalizedHeaders(headers);
-
   try {
     const response = await axios({
       method: 'GET',

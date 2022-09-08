@@ -5,7 +5,7 @@ import {globalStyles} from '../../styles/global';
 const Billing = () => {
   return (
     <View style={{flex: 1}}>
-      <View style={globalStyles.Container}>
+      <View style={globalStyles.container}>
         <Text>Billing</Text>
       </View>
     </View>

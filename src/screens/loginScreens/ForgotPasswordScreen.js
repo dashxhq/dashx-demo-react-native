@@ -45,7 +45,6 @@ export default function ForgotPasswordScreen({navigation}) {
         showToast('Internal server error');
       } else {
         showToast('Network error');
-        // console.log({error});
       }
     }
   };

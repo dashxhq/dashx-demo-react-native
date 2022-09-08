@@ -4,7 +4,12 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {showToast} from '../utils/LocalStorage';
 import {checkStorageReadPermission} from '../utils/PermissionUtils';
 
-export const FilePickerActionSheet = ({onPickFile}) => {
+export const FilePickerActionSheet = ({
+  onPickFile,
+  setDisplayActionSheet,
+  setShowActionSheet,
+  mediaType,
+}) => {
   const refActionSheet = useRef(null);
   const actions = [launchCamera, launchImageLibrary];
 
@@ -16,17 +21,34 @@ export const FilePickerActionSheet = ({onPickFile}) => {
   }, [refActionSheet]);
 
   const onPressAction = async index => {
-    try {
-      if (await checkStorageReadPermission()) {
-        const {
-          assets: [imagePickerResponse],
-        } = await actions[index]?.();
+    if (mediaType === 'image') {
+      try {
+        if (await checkStorageReadPermission()) {
+          const {
+            assets: [imagePickerResponse],
+          } = await actions[index]?.();
+          onPickFile(imagePickerResponse);
+        }
+      } catch (error) {
+        setShowActionSheet(false);
 
-        onPickFile(imagePickerResponse);
+        setDisplayActionSheet(false);
+        console.log('Upload error: ', error);
+        showToast(`Upload asset error: ${JSON.stringify(error)}`);
       }
-    } catch (error) {
-      console.log('Upload error: ', error);
-      showToast(`Upload asset error: ${JSON.stringify(error)}`);
+    } else {
+      try {
+        if (await checkStorageReadPermission()) {
+          const {
+            assets: [imagePickerResponse],
+          } = await actions[index]?.({mediaType: 'video', includeBase64: true});
+          onPickFile(imagePickerResponse);
+        }
+      } catch (error) {
+        setShowActionSheet(false);
+        console.log('Upload error: ', error);
+        showToast(`Upload asset error: ${JSON.stringify(error)}`);
+      }
     }
   };
 

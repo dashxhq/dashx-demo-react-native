@@ -5,7 +5,6 @@ import Button from '../../components/Button';
 import {CreatePostModal} from '../../components/CreatePost';
 import AppContext from '../../useContext/AppContext';
 import {Post} from '../../components/Post';
-import ModalView from '../../components/Modal';
 import {useIsFocused} from '@react-navigation/native';
 import {getAllPosts} from '../../utils/ApiClient';
 import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
@@ -66,6 +65,7 @@ const HomeScreen = () => {
           }}
           textColor={'white'}
           text={'Add Post'}
+          size={20}
         />
       </View>
       {showDataRefreshView && <RefreshIndicatorView />}

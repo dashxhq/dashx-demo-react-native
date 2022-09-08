@@ -64,7 +64,7 @@ export const TestFileUploadScreen = () => {
           'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
         );
 
-        console.log(JSON.stringify({assetUploadResponse: response}, null, 2));
+        // console.log(JSON.stringify({assetUploadResponse: response}, null, 2));
 
         showToast('Asset uploaded');
       }
@@ -75,7 +75,7 @@ export const TestFileUploadScreen = () => {
       setFileUploadProgress(false);
     }
   };
-  console.log(displayActionSheet);
+
   return (
     <View style={styles.screenContainer}>
       {displayActionSheet && <DisplayActionSheet />}

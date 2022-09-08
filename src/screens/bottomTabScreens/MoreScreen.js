@@ -16,18 +16,19 @@ const MoreScreen = ({navigation}) => {
     setUser();
   };
 
-  const navigateToUpdateProfileScreen = () => {
-    navigation.navigate('Profile');
+  const navigateToScreen = text => {
+    navigation.navigate(text);
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.containerView}>
+    <ScrollView contentContainerStyle={styles.containerView}>
       {/* // TODO Change this to use FlatList */}
-      <ButtonView text="Billing" />
-      <ButtonView text="Profile" onPress={navigateToUpdateProfileScreen} />
-      <ButtonView text="Settings" />
+      <ButtonView text="Billing" onPress={() => navigateToScreen('Billing')} />
+      <ButtonView text="Profile" onPress={() => navigateToScreen('Profile')} />
+      <ButtonView
+        text="Settings"
+        onPress={() => navigateToScreen('Settings')}
+      />
       <ButtonView text="Log out" onPress={performLogout} />
     </ScrollView>
   );
