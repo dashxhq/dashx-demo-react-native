@@ -263,6 +263,12 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    // For Java
+    implementation 'androidx.work:work-runtime:2.7.1' 
+
+  // For Kotlin
+  implementation 'androidx.work:work-runtime-ktx:2.7.1'
+
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
