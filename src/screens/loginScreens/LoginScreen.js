@@ -1,6 +1,6 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -15,18 +15,24 @@ import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import validate from '../../components/validator';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 import AppContext from '../../useContext/AppContext';
 import {BASE_URL} from '../../utils/ApiClient';
 
 const Login = ({navigation}) => {
   const {setUser, setUserToken, setDashXToken} = useContext(AppContext);
-  const [email, setEmail] = useState();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState();
   const [errorMessage, setErrorMessage] = useState({
     email: false,
     password: false,
   });
+  const [validation, setValidation] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    setValidation({email: email, password: password});
+  }, [email, password]);
 
   const showToast = responseData => {
     ToastAndroid.show(responseData, ToastAndroid.SHORT);
@@ -66,8 +72,8 @@ const Login = ({navigation}) => {
 
   const validateAndPerformLogin = () => {
     let count = 0;
-    for (let key in errorMessage) {
-      let validationResponse = validate(key, eval(key));
+    for (let key in validation) {
+      let validationResponse = validate(key, validation[key]);
       setErrorMessage(prev => {
         return {
           ...prev,
@@ -103,6 +109,14 @@ const Login = ({navigation}) => {
             error={errorMessage.email}
             keyboardType={'email-address'}
             autoCapitalize={'none'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  email: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage.email} />
           <InputText
@@ -110,11 +124,21 @@ const Login = ({navigation}) => {
             onChangeText={setPassword}
             secureText
             error={errorMessage.password}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  password: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage.password} />
           <Button
-            onPress={validateAndPerformLogin}
-            backgroundColor={'blue'}
+            onPress={() => {
+              validateAndPerformLogin();
+            }}
+            backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             textColor={'white'}
             text={'Login'}
             style={styles.loginActionButton}
@@ -122,9 +146,9 @@ const Login = ({navigation}) => {
           <Button
             onPress={() => navigation.navigate('Registration')}
             backgroundColor={'white'}
-            textColor={'blue'}
+            textColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             text={'Register'}
-            borderColor={'blue'}
+            borderColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             borderWidth={1}
             style={styles.loginActionButton}
           />
@@ -132,6 +156,12 @@ const Login = ({navigation}) => {
             <TouchableOpacity
               onPress={() => navigation.navigate('ForgotPassword')}>
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ContactUsScreen')}>
+              <Text style={styles.forgotPasswordText}>Contact Us</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -150,7 +180,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 16,
     fontWeight: '500',
-    color: 'blue',
+    color: BUTTON_BACKGROUND_COLOR_PRIMARY,
   },
   loginActionButton: {
     paddingVertical: 10,

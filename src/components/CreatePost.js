@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  ActivityIndicator,
   Keyboard,
   Modal,
   StyleSheet,
@@ -7,7 +8,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {APIPost} from '../utils/ApiClient';
+import {APIPost, EXTERNAL_COLUMN_ID} from '../utils/ApiClient';
 import {showToast} from '../utils/LocalStorage';
 import Button from './Button';
 import InputText from './InputText';
@@ -26,6 +27,10 @@ export const CreatePostModal = ({visible, dismissModal}) => {
   const [storePostVideo, setStorePostVideo] = useState();
   const [mediaType, setMediaType] = useState('');
   const [showActionSheet, setShowActionSheet] = useState(false);
+  const [showActivityIndicatorImage, setShowActivityIndicatorImage] =
+    useState(false);
+  const [showActivityIndicatorVideo, setShowActivityIndicatorVideo] =
+    useState(false);
 
   const validation = () => {
     let count = 0;
@@ -71,31 +76,33 @@ export const CreatePostModal = ({visible, dismissModal}) => {
 
   const onPickPostImage = async pickedMedia => {
     setShowActionSheet(false);
-
     try {
       if (mediaType === 'image') {
+        setShowActivityIndicatorImage(true);
         const response = await DashX.uploadExternalAsset(
           pickedMedia,
-          'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
+          EXTERNAL_COLUMN_ID.image,
         );
         setStorePostImage(oldUser => ({
           ...(oldUser || {}),
           postImage: response?.data?.asset,
         }));
       } else {
+        setShowActivityIndicatorVideo(true);
         const response = await DashX.uploadExternalAsset(
           pickedMedia,
-          '651144a7-e821-4af7-bb2b-abb2807cf2c9',
+          EXTERNAL_COLUMN_ID.video,
         );
         setStorePostVideo(oldUser => ({
           ...(oldUser || {}),
           postVideo: response?.data?.asset,
         }));
       }
-
+      setShowActivityIndicatorImage(false);
+      setShowActivityIndicatorVideo(false);
       showToast('Asset uploaded');
     } catch (error) {
-      console.log(error);
+      showToast(error);
     }
   };
 
@@ -117,6 +124,7 @@ export const CreatePostModal = ({visible, dismissModal}) => {
                 onPickFile={onPickPostImage}
                 setShowActionSheet={setShowActionSheet}
                 mediaType={mediaType}
+                type={'post'}
               />
             )}
             <Text style={styles.createPost}>Create a post</Text>
@@ -143,6 +151,7 @@ export const CreatePostModal = ({visible, dismissModal}) => {
               buttonText="Choose image"
               imageAndVideoUrl={storePostImage?.postImage?.url}
               button={() => selectImageAndVideo('image')}
+              showActivityIndicator={showActivityIndicatorImage}
             />
             <ImageAndVideoButton
               text="Select video: "
@@ -150,6 +159,7 @@ export const CreatePostModal = ({visible, dismissModal}) => {
               imageAndVideoUrl={storePostVideo?.postVideo?.url}
               style={{paddingRight: 5}}
               button={() => selectImageAndVideo('video')}
+              showActivityIndicator={showActivityIndicatorVideo}
             />
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -181,15 +191,11 @@ const ImageAndVideoButton = ({
   style,
   button,
   imageAndVideoUrl,
+  showActivityIndicator,
 }) => {
   return (
     <View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: 5,
-        }}>
+      <View style={styles.horizontalStack}>
         <Text style={{...style, color: 'black', fontSize: 15}}>{text}</Text>
         <Button
           onPress={button}
@@ -199,6 +205,9 @@ const ImageAndVideoButton = ({
         />
       </View>
       <Text style={{marginBottom: 10}}>{imageAndVideoUrl}</Text>
+      {showActivityIndicator && (
+        <ActivityIndicator style={styles.avatarActivityIndicator} />
+      )}
     </View>
   );
 };
@@ -229,9 +238,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
+  horizontalStack: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
   avatarActivityIndicator: {
     position: 'absolute',
-    verticalAlign: 'middle',
     alignSelf: 'center',
   },
 });

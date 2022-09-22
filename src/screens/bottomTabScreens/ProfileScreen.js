@@ -16,7 +16,7 @@ import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import ShowError from '../../components/showError';
 import validate from '../../components/validator';
-import {APIGet, APIPatch} from '../../utils/ApiClient';
+import {APIGet, APIPatch, EXTERNAL_COLUMN_ID} from '../../utils/ApiClient';
 import {showToast} from '../../utils/LocalStorage';
 
 const Profile = ({navigation}) => {
@@ -67,8 +67,9 @@ const Profile = ({navigation}) => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        avatar: user.avatar.url,
+        avatar: {url: user.avatar.url},
       },
+      setIsModalVisible,
     });
 
     setIsModalVisible(false);
@@ -107,7 +108,7 @@ const Profile = ({navigation}) => {
     try {
       const response = await DashX.uploadExternalAsset(
         pickedImage,
-        'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
+        EXTERNAL_COLUMN_ID.avatar,
       );
 
       setFileUploadProgress(false);
@@ -116,7 +117,7 @@ const Profile = ({navigation}) => {
 
       showToast('Asset uploaded');
     } catch (error) {
-      console.log(error);
+      showToast(error);
     }
   };
 
@@ -132,10 +133,9 @@ const Profile = ({navigation}) => {
           <FilePickerActionSheet
             onPickFile={onPickAvatarImage}
             setDisplayActionSheet={setDisplayActionSheet}
-            imageOrVideoText="image"
+            mediaType="image"
           />
         )}
-
         <AvatarView
           avatarImage={avatarImage || user?.avatar?.url}
           onPress={onPressAvatarButton}

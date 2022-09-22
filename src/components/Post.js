@@ -1,19 +1,11 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import moment from 'moment';
-import AppContext from '../useContext/AppContext';
 import {APIPut} from '../utils/ApiClient';
 import Video from 'react-native-video';
 import {ImageAndVideoModal} from './ImageAndVideoModal';
 
-export const Post = ({
+export const PostsList = ({
   item,
   didBeginToggleBookmark,
   didFinishToggleBookmark,
@@ -56,7 +48,12 @@ export const Post = ({
               Posted {moment(item.created_at).fromNow()}
             </Text>
             <Text style={styles.text}>{item.text}</Text>
-            <View style={{marginTop: 5, flexDirection: 'row'}}>
+            <View
+              style={{
+                marginTop: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
               <ImageAndVideoModal
                 visible={modal}
                 setModal={setModal}
@@ -72,7 +69,7 @@ export const Post = ({
                     });
                   }}>
                   <Image
-                    style={{width: 80, height: 100, marginRight: 20}}
+                    style={{width: 70, height: 100}}
                     source={{uri: item?.image?.url}}
                   />
                 </TouchableOpacity>
@@ -94,13 +91,16 @@ export const Post = ({
                     }}>
                     <Video
                       style={{
-                        width: 80,
+                        width: 70,
                         height: 100,
                       }}
                       source={{uri: item?.video?.url}}
                     />
                     <Image
-                      style={{position: 'absolute', tintColor: 'white'}}
+                      style={{
+                        position: 'absolute',
+                        tintColor: 'white',
+                      }}
                       source={require('../assets/playCircle.png')}
                     />
                   </View>

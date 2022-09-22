@@ -1,28 +1,25 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Keyboard,
   StyleSheet,
   Text,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {BASE_URL} from '../../components/APIClient';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import ErrorMessage from '../../components/ErrorMessage';
-import axios from 'axios';
 import validate from '../../components/validator';
+import {APIPost} from '../../utils/ApiClient';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 
 export default function ForgotPasswordScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showToast = responseData => {
-    ToastAndroid.show(responseData, ToastAndroid.SHORT);
-  };
 
   const storeEmail = value => {
     setEmail(value);
@@ -30,23 +27,15 @@ export default function ForgotPasswordScreen({navigation}) {
 
   const sendForgotPasswordInstructions = async () => {
     setIsModalVisible(true);
-    try {
-      await axios({
-        method: 'post',
-        url: `${BASE_URL}/forgot-password`,
-        data: JSON.stringify({email: email}),
-        headers: {'Content-Type': 'application/json'},
-      });
-      setIsModalVisible(false);
-      showToast('link was sent to your mail');
-    } catch (error) {
-      setIsModalVisible(false);
-      if (error?.response?.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
-    }
+    await APIPost({
+      endUrl: 'forgot-password',
+      dataObject: {
+        email: email,
+      },
+      headers: {'Content-Type': 'application/json'},
+      setIsModalVisible,
+    });
+    setIsModalVisible(false);
   };
 
   const validateAndInvokeForgotPassword = () => {
@@ -75,11 +64,21 @@ export default function ForgotPasswordScreen({navigation}) {
             firstTextInput={true}
             error={errorMessage}
             keyboardType={'email-address'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  email: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage} />
           <Button
-            onPress={validateAndInvokeForgotPassword}
-            backgroundColor={'blue'}
+            onPress={() => {
+              Keyboard.dismiss(), validateAndInvokeForgotPassword();
+            }}
+            backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             textColor={'white'}
             text={'Submit'}
             style={styles.actionButton}
@@ -89,7 +88,7 @@ export default function ForgotPasswordScreen({navigation}) {
               <Text
                 style={{
                   fontSize: 16,
-                  color: 'blue',
+                  color: BUTTON_BACKGROUND_COLOR_PRIMARY,
                   fontWeight: '500',
                   marginTop: 30,
                 }}>

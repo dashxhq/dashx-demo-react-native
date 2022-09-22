@@ -4,10 +4,10 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 import {CreatePostModal} from '../../components/CreatePost';
 import AppContext from '../../useContext/AppContext';
-import {Post} from '../../components/Post';
 import {useIsFocused} from '@react-navigation/native';
 import {getAllPosts} from '../../utils/ApiClient';
 import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
+import {PostsList} from '../../components/Post';
 
 const HomeScreen = () => {
   const {userToken, posts, setPosts} = useContext(AppContext);
@@ -74,7 +74,7 @@ const HomeScreen = () => {
           data={posts}
           keyExtractor={item => item.id}
           renderItem={({item}) => (
-            <Post
+            <PostsList
               item={item}
               didBeginToggleBookmark={didBeginToggleBookmark}
               didFinishToggleBookmark={didFinishToggleBookmark}

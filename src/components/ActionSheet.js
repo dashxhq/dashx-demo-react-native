@@ -10,6 +10,7 @@ export const FilePickerActionSheet = ({
   setDisplayActionSheet,
   setShowActionSheet,
   mediaType,
+  type,
 }) => {
   const refActionSheet = useRef(null);
   const actions = [launchCamera, launchImageLibrary];
@@ -31,10 +32,11 @@ export const FilePickerActionSheet = ({
           onPickFile(imagePickerResponse);
         }
       } catch (error) {
-        setShowActionSheet(false);
-
-        setDisplayActionSheet(false);
-        console.log('Upload error: ', error);
+        if (type === 'post') {
+          setShowActionSheet(false);
+        } else {
+          setDisplayActionSheet(false);
+        }
         showToast(`Upload asset error: ${JSON.stringify(error)}`);
       }
     } else {
@@ -42,20 +44,16 @@ export const FilePickerActionSheet = ({
         if (await checkStorageReadPermission()) {
           const {
             assets: [imagePickerResponse],
-          } = await actions[index]?.({mediaType: 'video', includeBase64: true});
+          } = await actions[index]?.({mediaType: 'video'});
           if (imagePickerResponse.uri.startsWith('content://')) {
-            // imagePickerResponse.uri1 = imagePickerResponse.uri;
-
             imagePickerResponse.uri = `file://${await getRealPathFromURI(
               imagePickerResponse.uri,
             )}`;
-            // imagePickerResponse.uri = `file://${imagePickerResponse.fileName}`;
           }
           onPickFile(imagePickerResponse);
         }
       } catch (error) {
         setShowActionSheet(false);
-        console.log('Upload error: ', error);
         showToast(`Upload asset error: ${JSON.stringify(error)}`);
       }
     }

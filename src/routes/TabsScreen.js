@@ -5,6 +5,7 @@ import HomeScreen from '../screens/bottomTabScreens/HomeScreen';
 import StoreScreen from '../screens/bottomTabScreens/StoreScreen';
 import BookmarksScreen from '../screens/bottomTabScreens/BookmarksScreen';
 import MoreScreen from '../screens/bottomTabScreens/MoreScreen';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../styles/global';
 
 const TabNavigator = createBottomTabNavigator();
 
@@ -21,7 +22,7 @@ const Tabs = () => {
           borderRightWidth: 1,
           paddingBottom: Platform.select({ios: 0, android: 5}),
         },
-        tabBarActiveTintColor: 'blue',
+        tabBarActiveTintColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
       }}>
       <TabNavigator.Screen
         name="Home"
@@ -33,7 +34,10 @@ const Tabs = () => {
               <Image
                 source={require('../assets/home.png')}
                 resizeMode="contain"
-                style={{width: 25, tintColor: focused ? 'blue' : null}}
+                style={{
+                  width: 25,
+                  tintColor: focused ? BUTTON_BACKGROUND_COLOR_PRIMARY : null,
+                }}
               />
             );
           },
@@ -49,7 +53,10 @@ const Tabs = () => {
               <Image
                 source={require('../assets/store.png')}
                 resizeMode="contain"
-                style={{width: 25, tintColor: focused ? 'blue' : null}}
+                style={{
+                  width: 25,
+                  tintColor: focused ? BUTTON_BACKGROUND_COLOR_PRIMARY : null,
+                }}
               />
             );
           },
@@ -65,7 +72,10 @@ const Tabs = () => {
               <Image
                 source={require('../assets/outLinedBookmark.png')}
                 resizeMode="contain"
-                style={{width: 25, tintColor: focused ? 'blue' : null}}
+                style={{
+                  width: 25,
+                  tintColor: focused ? BUTTON_BACKGROUND_COLOR_PRIMARY : null,
+                }}
               />
             );
           },
@@ -81,7 +91,10 @@ const Tabs = () => {
               <Image
                 source={require('../assets/more.png')}
                 resizeMode="contain"
-                style={{width: 25, tintColor: focused ? 'blue' : null}}
+                style={{
+                  width: 25,
+                  tintColor: focused ? BUTTON_BACKGROUND_COLOR_PRIMARY : null,
+                }}
               />
             );
           },

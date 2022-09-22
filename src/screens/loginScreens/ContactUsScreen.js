@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import {APIPost} from '../../utils/ApiClient';
 import ModalView from '../../components/Modal';
 import {showToast} from '../../utils/LocalStorage';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 
 const ContactUsScreen = ({navigation}) => {
   const [name, setName] = useState('');
@@ -26,6 +27,15 @@ const ContactUsScreen = ({navigation}) => {
     newPost: false,
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [contactUsValidation, setContactUsValidation] = useState({});
+
+  useEffect(() => {
+    setContactUsValidation({
+      name: name,
+      email: email,
+      newPost: newPost,
+    });
+  }, [name, email, newPost]);
 
   const contactUs = async () => {
     setIsModalVisible(true);
@@ -50,8 +60,8 @@ const ContactUsScreen = ({navigation}) => {
 
   const validation = () => {
     let count = 0;
-    for (let key in errorMessage) {
-      let validationResponse = validate(key, eval(key));
+    for (let key in contactUsValidation) {
+      let validationResponse = validate(key, contactUsValidation[key]);
       setErrorMessage(prev => {
         return {
           ...prev,
@@ -130,6 +140,7 @@ const ContactUsScreen = ({navigation}) => {
             <ErrorMessage message={errorMessage.newPost} />
 
             <Button
+              style={{marginTop: 20}}
               onPress={() => {
                 validation();
                 Keyboard.dismiss();
@@ -144,7 +155,7 @@ const ContactUsScreen = ({navigation}) => {
                     marginTop: 30,
                     fontSize: 16,
                     fontWeight: '500',
-                    color: 'blue',
+                    color: BUTTON_BACKGROUND_COLOR_PRIMARY,
                   }}>
                   Go back
                 </Text>

@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, ToastAndroid, View} from 'react-native';
-import {BASE_URL} from '../../components/APIClient';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import ErrorMessage from '../../components/ErrorMessage';
-import axios from 'axios';
 import validate from '../../components/validator';
+import {APIPost} from '../../utils/ApiClient';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 
 export default function RegistrationScreen({navigation}) {
   const [firstName, setFirstName] = useState('');
@@ -21,10 +21,16 @@ export default function RegistrationScreen({navigation}) {
     email: false,
     password: false,
   });
+  const [validation, setValidation] = useState({});
 
-  const showToast = text => {
-    ToastAndroid.show(text, ToastAndroid.SHORT);
-  };
+  useEffect(() => {
+    setValidation({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+    });
+  }, [firstName, lastName, email, password]);
 
   const storeFirstName = value => {
     setFirstName(value);
@@ -44,36 +50,24 @@ export default function RegistrationScreen({navigation}) {
 
   const register = async () => {
     setIsModalVisible(true);
-    try {
-      const response = await axios({
-        method: 'post',
-        url: `${BASE_URL}/register`,
-        data: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      });
-      setIsModalVisible(false);
-      showToast(response.data.message);
-    } catch (error) {
-      setIsModalVisible(false);
-      if (error?.response?.status === 409) {
-        showToast('Email already exist');
-      } else if (error?.response?.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
-    }
+    await APIPost({
+      endUrl: 'register',
+      dataObject: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+      },
+      headers: {'Content-Type': 'application/json'},
+      setIsModalVisible,
+    });
+    setIsModalVisible(false);
   };
 
   const validateAndRegister = () => {
     let count = 0;
-    for (let key in errorMessage) {
-      let validationResponse = validate(key, eval(key));
+    for (let key in validation) {
+      let validationResponse = validate(key, validation[key]);
       setErrorMessage(prev => {
         return {
           ...prev,
@@ -109,6 +103,14 @@ export default function RegistrationScreen({navigation}) {
             error={errorMessage.firstName}
             firstTextInput={true}
             autoCapitalize={'words'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  firstName: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage.firstName} />
           <InputText
@@ -116,6 +118,14 @@ export default function RegistrationScreen({navigation}) {
             onChangeText={storeLastName}
             error={errorMessage.lastName}
             autoCapitalize={'words'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  lastName: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage.lastName} />
           <InputText
@@ -123,6 +133,14 @@ export default function RegistrationScreen({navigation}) {
             onChangeText={storeEmail}
             error={errorMessage.email}
             keyboardType={'email-address'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  email: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage.email} />
           <InputText
@@ -130,11 +148,19 @@ export default function RegistrationScreen({navigation}) {
             onChangeText={storePassword}
             secureText
             error={errorMessage.password}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  password: false,
+                };
+              });
+            }}
           />
           <ErrorMessage message={errorMessage.password} />
           <Button
             onPress={validateAndRegister}
-            backgroundColor={'blue'}
+            backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             textColor={'white'}
             text={'Register'}
             style={styles.registerActionButton}
@@ -142,9 +168,9 @@ export default function RegistrationScreen({navigation}) {
           <Button
             onPress={() => navigation.navigate('Login')}
             backgroundColor={'white'}
-            textColor={'blue'}
+            textColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             text={'Login'}
-            borderColor={'blue'}
+            borderColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             borderWidth={1}
             style={styles.registerActionButton}
           />
@@ -157,7 +183,7 @@ export default function RegistrationScreen({navigation}) {
 const styles = StyleSheet.create({
   registerStyle: {
     alignItems: 'center',
-    backgroundColor: 'blue',
+    backgroundColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
     borderRadius: 5,
     paddingVertical: 8,
     paddingHorizontal: 10,
@@ -166,7 +192,7 @@ const styles = StyleSheet.create({
   LogIn: {
     alignItems: 'center',
     backgroundColor: 'white',
-    borderColor: 'blue',
+    borderColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
     borderWidth: 1,
     borderRadius: 5,
     marginTop: 20,
