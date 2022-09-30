@@ -117,7 +117,7 @@ const Profile = ({navigation}) => {
 
       showToast('Asset uploaded');
     } catch (error) {
-      showToast(error);
+      showToast(error.message);
     }
   };
 

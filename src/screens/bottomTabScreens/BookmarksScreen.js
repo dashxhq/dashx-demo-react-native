@@ -2,7 +2,7 @@ import {useIsFocused} from '@react-navigation/core';
 import React, {useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Post} from '../../components/Post';
+import {PostsList} from '../../components/Post';
 import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
 import {APIGet} from '../../utils/ApiClient';
 
@@ -60,7 +60,7 @@ const BookmarksScreen = () => {
             <FlatList
               data={bookmarkedPosts}
               renderItem={({item, index}) => (
-                <Post
+                <PostsList
                   item={item}
                   didBeginToggleBookmark={didBeginToggleBookmark}
                   didFinishToggleBookmark={didFinishToggleBookmark}

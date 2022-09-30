@@ -1,5 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, ToastAndroid, View} from 'react-native';
+import {
+  Keyboard,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import InputText from '../../components/InputText';
@@ -86,7 +91,7 @@ export default function RegistrationScreen({navigation}) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{flexGrow: 1}}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{flex: 1, alignItems: 'center', backgroundColor: '#FFFFFF'}}>
         <ModalView visible={isModalVisible} />
         <Header title={'Register'} />
@@ -159,7 +164,10 @@ export default function RegistrationScreen({navigation}) {
           />
           <ErrorMessage message={errorMessage.password} />
           <Button
-            onPress={validateAndRegister}
+            onPress={() => {
+              Keyboard.dismiss();
+              validateAndRegister();
+            }}
             backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             textColor={'white'}
             text={'Register'}
@@ -176,7 +184,7 @@ export default function RegistrationScreen({navigation}) {
           />
         </View>
       </View>
-    </ScrollView>
+    </TouchableWithoutFeedback>
   );
 }
 
