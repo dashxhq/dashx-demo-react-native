@@ -66,7 +66,6 @@ const nonGetMethod = async ({
       data: JSON.stringify(dataObject),
       headers: finalHeaders,
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     processNetworkError(error, setIsModalVisible);

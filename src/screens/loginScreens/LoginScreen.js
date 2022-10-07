@@ -2,11 +2,13 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import React, {useContext, useEffect, useState} from 'react';
 import {
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
   ToastAndroid,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import Button from '../../components/Button';
@@ -93,7 +95,7 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{flexGrow: 1}}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <Header title={'Sign in to your Account'} />
         <View
@@ -167,7 +169,7 @@ const Login = ({navigation}) => {
         </View>
         <ModalView visible={isModalVisible} />
       </View>
-    </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
