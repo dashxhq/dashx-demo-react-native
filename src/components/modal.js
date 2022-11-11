@@ -1,43 +1,24 @@
-import {View, Text, Modal} from 'react-native';
 import React from 'react';
-import LottieView from 'lottie-react-native';
+import {View, Modal, StyleSheet, ActivityIndicator} from 'react-native';
 
-export default function ModalView({visible}) {
+const ModalView = ({visible}) => {
   return (
-    <Modal visible={visible} transparent={true}>
-      <View
-        style={{
-          backgroundColor: '#000000aa',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <View
-          style={{
-            alignSelf: 'stretch',
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            marginLeft: 50,
-            marginRight: 50,
-            alignItems: 'center',
-          }}>
-          <LottieView
-            style={{width: 50, height: 50}}
-            source={require('../assets/loading.json')}
-            autoPlay
-            loop
-          />
-          <Text
-            style={{
-              marginTop: 20,
-              fontSize: 18,
-              color: 'black',
-              fontWeight: '500',
-            }}>
-            Loading...
-          </Text>
-        </View>
+    <Modal visible={visible} transparent={true} statusBarTranslucent>
+      <View style={styles.container}>
+        <ActivityIndicator color={'white'} size="small" />
       </View>
     </Modal>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'black',
+    opacity: 0.75,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+export default ModalView;

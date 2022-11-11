@@ -1,64 +1,108 @@
-import React from 'react';
-import {
-  BUTTON_BACKGROUND_COLOR_PRIMARY,
-  globalStyles,
-} from '../../styles/global';
-import {Text, View, TouchableOpacity, Image, ToastAndroid} from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {Text, View, FlatList, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import DocumentPicker from 'react-native-document-picker';
+import Button from '../../components/Button';
+import {CreatePostModal} from '../../components/CreatePost';
+import AppContext from '../../useContext/AppContext';
+import {useIsFocused} from '@react-navigation/native';
+import {getAllPosts} from '../../utils/ApiClient';
+import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
+import {PostsList} from '../../components/Post';
 
 const HomeScreen = () => {
-  const showToast = responseDaata => {
-    ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
+  const {userToken, posts, setPosts} = useContext(AppContext);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [showDataRefreshView, setShowDataRefreshView] = useState(false);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    (async () => {
+      if (isFocused) {
+        setShowDataRefreshView(true);
+        setPosts(await getAllPosts(userToken));
+        setShowDataRefreshView(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
+
+  const didBeginToggleBookmark = async item => {
+    // Optimistically update posts
+    setPosts(oldPosts =>
+      oldPosts.map(post => (post.id === item.id ? item : post)),
+    );
   };
 
-  const selectFile = async () => {
-    try {
-      await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
-      });
-      showToast('File uploaded Succssfully');
-    } catch (error) {
-      if (DocumentPicker.isCancel(error)) {
-        showToast('Canceled');
-      } else {
-        console.log(error);
-        showToast('Something went wrong');
-      }
+  const didFinishToggleBookmark = async (item, errorOccurred) => {
+    // Update the posts in case of error to revert to previous state
+    if (errorOccurred) {
+      setPosts(oldPosts =>
+        oldPosts.map(post => (post.id === item.id ? item : post)),
+      );
     }
   };
+
+  const dismissCreatePostModal = async postCreated => {
+    setShowCreatePostModal(false);
+
+    if (postCreated) {
+      setShowDataRefreshView(true);
+      setPosts(await getAllPosts(userToken));
+      setShowDataRefreshView(false);
+    }
+  };
+
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={globalStyles.Container}>
-        <Text>Home</Text>
-        <TouchableOpacity
-          onPress={selectFile}
-          style={{
-            marginTop: 20,
-            backgroundColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            borderRadius: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <Image
-            style={{width: 30, height: 30, marginRight: 10}}
-            source={require('../../assets/upload.png')}
-          />
-          <Text
-            style={{
-              color: 'black',
-              fontSize: 18,
-              fontWeight: '500',
-              marginRight: 10,
-            }}>
-            Upload
-          </Text>
-        </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      {showCreatePostModal && (
+        <CreatePostModal dismissModal={dismissCreatePostModal} />
+      )}
+      <View style={styles.titleView}>
+        <Text style={styles.titleText}>Posts</Text>
+        <Button
+          onPress={() => {
+            setShowCreatePostModal(true);
+          }}
+          textColor={'white'}
+          text={'Add Post'}
+          size={16}
+        />
+      </View>
+      {showDataRefreshView && <RefreshIndicatorView />}
+      <View style={{flex: 1}}>
+        <FlatList
+          data={posts}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => (
+            <PostsList
+              item={item}
+              didBeginToggleBookmark={didBeginToggleBookmark}
+              didFinishToggleBookmark={didFinishToggleBookmark}
+            />
+          )}
+        />
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  titleView: {
+    flex: 0.1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  titleText: {
+    fontSize: 24,
+    color: 'black',
+    fontWeight: '700',
+  },
+});
 
 export default HomeScreen;

@@ -1,94 +1,87 @@
-import axios from 'axios';
-import React, {useContext, useState} from 'react';
+import DashX from '@dashx/react-native';
+import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Image,
-  Platform,
+  Keyboard,
+  LogBox,
   StyleSheet,
-  Text,
-  ToastAndroid,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BASE_URL} from '../../components/APIClient';
-import Button from '../../components/button';
-import InputText from '../../components/inputText';
-import ModalView from '../../components/modal';
+import {FilePickerActionSheet} from '../../components/ActionSheet';
+import Button from '../../components/Button';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
 import ShowError from '../../components/showError';
 import validate from '../../components/validator';
-import AppContext from '../../useContext/AppContext';
+import {APIGet, APIPatch, EXTERNAL_COLUMN_ID} from '../../utils/ApiClient';
+import {showToast} from '../../utils/LocalStorage';
 
-const Profile = () => {
-  const {userToken, user, setUser} = useContext(AppContext);
-
+const Profile = ({navigation}) => {
   const [errorMessage, setErrorMessage] = useState({
     email: false,
     first_name: false,
     last_name: false,
   });
-  const [updateFlag, setUpdateFlag] = useState(false);
-  const [imageFlag, setImageFlag] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [user, setUser] = useState();
+  const [avatarImage, setAvatarImage] = useState();
+  const [fileUploadInProgress, setFileUploadProgress] = useState(false);
+  const [displayActionSheet, setDisplayActionSheet] = useState(false);
 
-  const [tempUser, setTempUser] = useState(user || {});
+  const getProfile = async () => {
+    setIsModalVisible(true);
 
-  const showToast = responseDaata => {
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
-    }
+    const response = await APIGet({
+      endUrl: 'profile',
+    });
+    setUser(response.user);
+
+    setIsModalVisible(false);
   };
 
+  useEffect(() => {
+    getProfile();
+    LogBox.ignoreLogs([
+      'Animated: `useNativeDriver`',
+      'componentWillReceiveProps',
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const updateField = fieldKey => fieldValue => {
-    setTempUser(old => ({
+    setUser(old => ({
       ...old,
       [fieldKey]: fieldValue,
     }));
   };
 
-  const handleImage = () => {
-    setUpdateFlag(true);
-    setImageFlag(false);
-  };
-
-  const handleUpdate = () => {
-    setUpdateFlag(false);
-    setImageFlag(true);
-  };
-
   const updateProfile = async () => {
     setIsModalVisible(true);
-    try {
-      const response = await axios.patch(
-        `${BASE_URL}/update-profile`,
-        tempUser,
-        {
-          headers: {
-            'Content-type': 'application/json',
-            Authorization: 'Bearer '.concat(userToken),
-          },
-        },
-      );
-      setIsModalVisible(false);
-      showToast('Profile Successfully Updated');
-      setUser(response.data);
-    } catch (error) {
-      console.log({error});
-      setIsModalVisible(false);
-      if (error?.response?.status === 401) {
-        showToast('Unauthorized');
-      } else if (error?.response?.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
-    }
+
+    await APIPatch({
+      endUrl: 'update-profile',
+      dataObject: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar: {url: user.avatar.url},
+      },
+      setIsModalVisible,
+    });
+
+    setIsModalVisible(false);
+
+    showToast('Profile Successfully Updated');
+    navigation.goBack();
   };
 
   const validation = () => {
     let count = 0;
     for (let key in errorMessage) {
-      let validationResponse = validate(key, tempUser[key]);
-      console.log(tempUser.email);
+      let validationResponse = validate(key, user[key]);
       setErrorMessage(prev => {
         return {
           ...prev,
@@ -104,69 +97,138 @@ const Profile = () => {
 
     if (count === Object.keys(errorMessage).length) {
       updateProfile();
-      handleUpdate();
     }
   };
 
+  const onPickAvatarImage = async pickedImage => {
+    setAvatarImage(pickedImage.uri);
+    setDisplayActionSheet(false);
+    setFileUploadProgress(true);
+
+    try {
+      const response = await DashX.uploadExternalAsset(
+        pickedImage,
+        EXTERNAL_COLUMN_ID.avatar,
+      );
+
+      setFileUploadProgress(false);
+
+      setUser(oldUser => ({...(oldUser || {}), avatar: response?.data?.asset}));
+
+      showToast('Asset uploaded');
+    } catch (error) {
+      showToast(error.message);
+    }
+  };
+
+  const onPressAvatarButton = async () => {
+    setDisplayActionSheet(true);
+  };
+
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <ModalView visible={isModalVisible} />
-        <View style={styles.horizontalStack}>
-          <View style={{alignItems: 'center', marginTop: 40}}>
-            <Text style={styles.title}>Profile</Text>
-          </View>
-          <View style={{marginTop: 40}}>
-            <TouchableOpacity onPress={handleImage}>
-              {imageFlag ? (
-                <Image
-                  style={styles.image}
-                  source={require('../../assets/edit.png')}
-                />
-              ) : null}
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            alignSelf: 'stretch',
-            marginLeft: 20,
-            marginRight: 20,
-          }}>
+        {displayActionSheet && (
+          <FilePickerActionSheet
+            onPickFile={onPickAvatarImage}
+            setDisplayActionSheet={setDisplayActionSheet}
+            mediaType="image"
+          />
+        )}
+        <AvatarView
+          avatarImage={avatarImage || user?.avatar?.url}
+          onPress={onPressAvatarButton}
+          showLoader={fileUploadInProgress}
+          disabled={fileUploadInProgress}
+        />
+        <View style={styles.textFieldView}>
           <InputText
-            placeholder={'First Name'}
             onChangeText={updateField('first_name')}
-            value={tempUser.first_name}
+            value={user?.first_name}
             error={errorMessage.first_name}
-            editable={updateFlag}
             autoCapitalize={'words'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  first_name: true,
+                };
+              });
+            }}
           />
           <ShowError message={errorMessage.first_name} />
           <InputText
-            placeholder={'Last Name'}
             onChangeText={updateField('last_name')}
-            value={tempUser.last_name}
+            value={user?.last_name}
             error={errorMessage.last_name}
-            editable={updateFlag}
             autoCapitalize={'words'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  last_name: true,
+                };
+              });
+            }}
           />
           <ShowError message={errorMessage.last_name} />
           <InputText
-            placeholder={'Email'}
             onChangeText={updateField('email')}
-            value={tempUser.email}
+            value={user?.email}
             error={errorMessage.email}
-            editable={updateFlag}
             keyboardType={'email-address'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  email: true,
+                };
+              });
+            }}
           />
           <ShowError message={errorMessage.email} />
-          {updateFlag && (
-            <Button onPress={validation} textColor={'white'} text={'Update'} />
-          )}
+          <Button
+            onPress={() => {
+              validation();
+              Keyboard.dismiss();
+            }}
+            textColor={'white'}
+            text={'Update'}
+            disabled={fileUploadInProgress}
+            style={styles.updateButton}
+          />
         </View>
       </View>
-    </SafeAreaView>
+    </TouchableWithoutFeedback>
+  );
+};
+
+const AvatarView = ({avatarImage, onPress, showLoader, ...rest}) => {
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.avatar} {...rest}>
+      <Image
+        source={{
+          uri: avatarImage,
+        }}
+        style={styles.avatarImage}
+      />
+      {!avatarImage && (
+        <View style={styles.imageLogoContainer}>
+          <Image
+            style={styles.imageLogo}
+            source={require('../../assets/addPhoto.png')}
+          />
+        </View>
+      )}
+      {showLoader && (
+        <ActivityIndicator
+          size="small"
+          color="white"
+          style={styles.avatarActivityIndicator}
+        />
+      )}
+    </TouchableOpacity>
   );
 };
 
@@ -175,22 +237,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  horizontalStack: {
+  updateButton: {
+    marginTop: 20,
+    paddingVertical: 15,
+  },
+  textFieldView: {
+    flex: 1,
+    alignSelf: 'stretch',
+    marginHorizontal: 20,
+  },
+
+  // Avatar image
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'lightgray',
+    alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
+    marginTop: 20,
+    elevation: 5,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: 'black',
-    paddingRight: 15,
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
-  image: {
+  imageLogo: {
     width: 30,
     height: 30,
-    resizeMode: 'contain',
+  },
+  imageLogoContainer: {
+    position: 'absolute',
+    height: 30,
+    width: 30,
+  },
+  avatarActivityIndicator: {
+    position: 'absolute',
+    verticalAlign: 'middle',
+    alignSelf: 'center',
   },
 });
 

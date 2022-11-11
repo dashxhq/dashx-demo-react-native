@@ -4,10 +4,12 @@ import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from '../screens/loginScreens/LoginScreen';
 import RegistrationScreen from '../screens/loginScreens/RegistrationScreen';
 import ForgotPasswordScreen from '../screens/loginScreens/ForgotPasswordScreen';
+import ContactUsScreen from '../screens/loginScreens/ContactUsScreen';
 import HomeStack from './HomeStack';
 
 const Stack = createStackNavigator();
-function loginStack() {
+
+function LoginStack() {
   return (
     <Stack.Navigator>
       <Stack.Group screenOptions={{presentation: 'modal'}}>
@@ -27,6 +29,11 @@ function loginStack() {
           options={{headerShown: false}}
         />
         <Stack.Screen
+          name="ContactUsScreen"
+          component={ContactUsScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
           name="HomeStack"
           component={HomeStack}
           options={{headerShown: false}}
@@ -35,4 +42,4 @@ function loginStack() {
     </Stack.Navigator>
   );
 }
-export default loginStack;
+export default LoginStack;

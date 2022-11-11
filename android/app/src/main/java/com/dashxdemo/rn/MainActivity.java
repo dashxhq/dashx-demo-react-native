@@ -1,4 +1,4 @@
-package com.dashx;
+package com.dashxdemo.rn;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

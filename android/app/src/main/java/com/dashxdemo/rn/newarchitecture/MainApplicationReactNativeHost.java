@@ -1,4 +1,4 @@
-package com.dashx.newarchitecture;
+package com.dashxdemo.rn.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,7 +19,7 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.dashx.BuildConfig;
+import com.dashxdemo.rn.BuildConfig;
 import com.dashx.newarchitecture.components.MainComponentsRegistry;
 import com.dashx.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;

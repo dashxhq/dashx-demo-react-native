@@ -1,23 +1,34 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NavigationContainer} from '@react-navigation/native';
 import React, {useEffect, useMemo, useState} from 'react';
-import {StatusBar} from 'react-native';
-import ModalView from './src/components/modal';
+import {NavigationContainer} from '@react-navigation/native';
+import {LogBox, StatusBar} from 'react-native';
 import HomeStack from './src/routes/HomeStack';
 import Navigator from './src/routes/loginStack';
-import AppContext, {AppProvider} from './src/useContext/AppContext';
+import AppContext from './src/useContext/AppContext';
 import {getStoredValueForKey, storeValueForKey} from './src/utils/LocalStorage';
+import DashX from '@dashx/react-native';
 
 function App() {
   const [isProcessed, setIsProcessed] = useState(false);
+  const [posts, setPosts] = useState([]);
 
   const [user, updateUser] = useState();
-  const [userToken, setUserToken] = useState('');
-  const isLoggedIn = useMemo(() => !!user);
+  const [userToken, updateUserToken] = useState('');
+  const [, updateDashXToken] = useState('');
+  const isLoggedIn = useMemo(() => !!user, [user]);
 
-  const setUser = user => {
-    storeValueForKey('user', user ? JSON.stringify(user) : null);
-    updateUser(user);
+  const setDashXToken = token => {
+    storeValueForKey('dashXToken', token);
+    updateDashXToken(token);
+  };
+
+  const setUserToken = token => {
+    storeValueForKey('userToken', token);
+    updateUserToken(token);
+  };
+
+  const setUser = localUser => {
+    storeValueForKey('user', localUser ? JSON.stringify(localUser) : null);
+    updateUser(localUser);
   };
 
   useEffect(() => {
@@ -27,8 +38,15 @@ function App() {
       updateUser(storedUser);
       setUserToken(storedUserToken);
 
+      await DashX.configure({
+        baseURI: 'https://api.dashx-staging.com/graphql',
+        targetEnvironment: 'staging',
+        publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
+      });
+
       setIsProcessed(true);
     })();
+    LogBox.ignoreAllLogs();
   }, []);
 
   return (
@@ -38,9 +56,16 @@ function App() {
         setUserToken,
         user,
         setUser,
+        setDashXToken,
+        posts,
+        setPosts,
       }}>
       <NavigationContainer>
-        <StatusBar translucent backgroundColor={'white'} />
+        <StatusBar
+          translucent
+          backgroundColor={'black'}
+          barStyle="light-content"
+        />
         {isProcessed && isLoggedIn && <HomeStack />}
         {isProcessed && !isLoggedIn && <Navigator />}
       </NavigationContainer>

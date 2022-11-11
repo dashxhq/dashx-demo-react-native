@@ -3,34 +3,22 @@ import {createStackNavigator} from '@react-navigation/stack';
 import BillingScreen from '../screens/bottomTabScreens/BillingScreen';
 import ProfileScreen from '../screens/bottomTabScreens/ProfileScreen';
 import SettingsScreen from '../screens/bottomTabScreens/SettingsScreen';
-import Tabs from '../routes/tabs';
+import TabsScreen from './TabsScreen';
 
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Group screenOptions={{presentation: 'modal'}}>
+      <Stack.Group screenOptions={{presentation: 'card'}}>
         <Stack.Screen
-          name="Tabs"
-          component={Tabs}
-          options={{headerShown: false}}
+          name="TabsScreen"
+          component={TabsScreen}
+          options={{headerShown: false, headerTitle: 'Home'}}
         />
-        <Stack.Screen
-          name="Billing"
-          component={BillingScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="Billing" component={BillingScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );

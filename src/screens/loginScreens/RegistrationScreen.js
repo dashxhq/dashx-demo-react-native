@@ -1,33 +1,41 @@
-import {View, StyleSheet, ToastAndroid} from 'react-native';
-import React, {useState} from 'react';
-import InputText from '../../components/inputText';
-import axios from 'axios';
-import ShowError from '../../components/showError';
+import React, {useEffect, useState} from 'react';
+import {
+  Keyboard,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import Button from '../../components/Button';
+import Header from '../../components/Header';
+import InputText from '../../components/InputText';
+import ModalView from '../../components/Modal';
+import ErrorMessage from '../../components/ErrorMessage';
 import validate from '../../components/validator';
-import ModalView from '../../components/modal';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Header from '../../components/header';
-import Button from '../../components/button';
-import CheckBox from '../../components/checkBox';
-import {BASE_URL} from '../../components/APIClient';
+import {APIPost} from '../../utils/ApiClient';
+import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 
 export default function RegistrationScreen({navigation}) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
-  const [modal, setModal] = useState(false);
-  const [hidePassword, setHidePassword] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState({
     firstName: false,
     lastName: false,
     email: false,
     password: false,
   });
+  const [validation, setValidation] = useState({});
 
-  const showToast = responseDaata => {
-    ToastAndroid.show(responseDaata, ToastAndroid.SHORT);
-  };
+  useEffect(() => {
+    setValidation({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+    });
+  }, [firstName, lastName, email, password]);
 
   const storeFirstName = value => {
     setFirstName(value);
@@ -45,42 +53,26 @@ export default function RegistrationScreen({navigation}) {
     setPassWord(value);
   };
 
-  const showPassWord = value => {
-    setHidePassword(!value);
-  };
-
   const register = async () => {
-    setModal(true);
-    try {
-      const response = await axios({
-        method: 'post',
-        url: `${BASE_URL}/register`,
-        data: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      });
-      setModal(false);
-      showToast(response.data.message);
-    } catch (error) {
-      setModal(false);
-      if (error.response.status === 409) {
-        showToast('Email already exist');
-      } else if (error.response.status === 500) {
-        showToast('Internal server error');
-      } else {
-        showToast('Network error');
-      }
-    }
+    setIsModalVisible(true);
+    await APIPost({
+      endUrl: 'register',
+      dataObject: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+      },
+      headers: {'Content-Type': 'application/json'},
+      setIsModalVisible,
+    });
+    setIsModalVisible(false);
   };
 
-  const validation = () => {
+  const validateAndRegister = () => {
     let count = 0;
-    for (let key in errorMessage) {
-      let validationResponse = validate(key, eval(key));
+    for (let key in validation) {
+      let validationResponse = validate(key, validation[key]);
       setErrorMessage(prev => {
         return {
           ...prev,
@@ -99,9 +91,9 @@ export default function RegistrationScreen({navigation}) {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{flex: 1, alignItems: 'center', backgroundColor: '#FFFFFF'}}>
-        <ModalView modal={modal} />
+        <ModalView visible={isModalVisible} />
         <Header title={'Register'} />
         <View
           style={{
@@ -112,58 +104,94 @@ export default function RegistrationScreen({navigation}) {
           }}>
           <InputText
             placeholder={'First Name'}
-            onclick={storeFirstName}
+            onChangeText={storeFirstName}
             error={errorMessage.firstName}
             firstTextInput={true}
             autoCapitalize={'words'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  firstName: false,
+                };
+              });
+            }}
           />
-          <ShowError message={errorMessage.firstName} />
+          <ErrorMessage message={errorMessage.firstName} />
           <InputText
             placeholder={'Last Name'}
-            onclick={storeLastName}
+            onChangeText={storeLastName}
             error={errorMessage.lastName}
             autoCapitalize={'words'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  lastName: false,
+                };
+              });
+            }}
           />
-          <ShowError message={errorMessage.lastName} />
+          <ErrorMessage message={errorMessage.lastName} />
           <InputText
             placeholder={'Email'}
-            onclick={storeEmail}
+            onChangeText={storeEmail}
             error={errorMessage.email}
             keyboardType={'email-address'}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  email: false,
+                };
+              });
+            }}
           />
-          <ShowError message={errorMessage.email} />
+          <ErrorMessage message={errorMessage.email} />
           <InputText
             placeholder={'Password'}
-            onclick={storePassword}
-            secureText={hidePassword}
+            onChangeText={storePassword}
+            secureText
             error={errorMessage.password}
+            onFocus={() => {
+              setErrorMessage(prev => {
+                return {
+                  ...prev,
+                  password: false,
+                };
+              });
+            }}
           />
-          <ShowError message={errorMessage.password} />
-          <CheckBox onPress={showPassWord} value={hidePassword} />
+          <ErrorMessage message={errorMessage.password} />
           <Button
-            onclickFunction={validation}
-            backgroundColor={'blue'}
+            onPress={() => {
+              Keyboard.dismiss();
+              validateAndRegister();
+            }}
+            backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             textColor={'white'}
             text={'Register'}
+            style={styles.registerActionButton}
           />
           <Button
-            onclickFunction={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate('Login')}
             backgroundColor={'white'}
-            textColor={'blue'}
-            text={'Log in'}
-            borderColor={'blue'}
+            textColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
+            text={'Login'}
+            borderColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             borderWidth={1}
+            style={styles.registerActionButton}
           />
         </View>
       </View>
-    </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   registerStyle: {
     alignItems: 'center',
-    backgroundColor: 'blue',
+    backgroundColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
     borderRadius: 5,
     paddingVertical: 8,
     paddingHorizontal: 10,
@@ -172,7 +200,7 @@ const styles = StyleSheet.create({
   LogIn: {
     alignItems: 'center',
     backgroundColor: 'white',
-    borderColor: 'blue',
+    borderColor: BUTTON_BACKGROUND_COLOR_PRIMARY,
     borderWidth: 1,
     borderRadius: 5,
     marginTop: 20,
@@ -183,5 +211,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     width: 50,
     height: 50,
+  },
+  registerActionButton: {
+    paddingVertical: 10,
+    marginTop: 20,
   },
 });

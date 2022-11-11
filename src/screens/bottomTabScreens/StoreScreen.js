@@ -1,16 +1,22 @@
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {globalStyles} from '../../styles/global';
-import {Text, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const StoreScreen = () => {
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={globalStyles.Container}>
+    <SafeAreaView style={styles.container}>
+      <View style={globalStyles.container}>
         <Text>Store</Text>
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+});
 
 export default StoreScreen;

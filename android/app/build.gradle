@@ -134,11 +134,11 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.dashx"
+        applicationId "com.dashxdemo.rn"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -166,6 +166,11 @@ android {
                 }
             }
         }
+    }
+    
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     if (isNewArchitectureEnabled()) {
@@ -209,14 +214,14 @@ android {
         }
     }
 
-    splits {
-        abi {
-            reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
-            include (*reactNativeArchitectures())
-        }
-    }
+    // splits {
+    //     abi {
+    //         reset()
+    //         enable enableSeparateBuildPerCPUArchitecture
+    //         universalApk false  // If true, also generate a universal APK
+    //         include (*reactNativeArchitectures())
+    //     }
+    // }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -257,6 +262,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    // For Java
+    implementation 'androidx.work:work-runtime:2.7.1' 
+
+  // For Kotlin
+  implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
