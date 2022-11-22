@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 
+apply plugin: 'com.google.gms.google-services'
+
 import com.android.build.OutputFile
 
 /**
@@ -167,7 +169,7 @@ android {
             }
         }
     }
-    
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -264,7 +266,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     // For Java
-    implementation 'androidx.work:work-runtime:2.7.1' 
+    implementation 'androidx.work:work-runtime:2.7.1'
 
   // For Kotlin
   implementation 'androidx.work:work-runtime-ktx:2.7.1'

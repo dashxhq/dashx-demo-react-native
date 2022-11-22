@@ -14,7 +14,7 @@ import {FilePickerActionSheet} from '../../components/ActionSheet';
 import Button from '../../components/Button';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
-import ShowError from '../../components/showError';
+import ShowError from '../../components/ShowError';
 import validate from '../../components/validator';
 import {APIGet, APIPatch, EXTERNAL_COLUMN_ID} from '../../utils/ApiClient';
 import {showToast} from '../../utils/LocalStorage';
