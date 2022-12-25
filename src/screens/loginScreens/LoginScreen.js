@@ -19,6 +19,7 @@ import validate from '../../components/validator';
 import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 import AppContext from '../../useContext/AppContext';
 import {BASE_URL} from '../../utils/ApiClient';
+import DashX from "@dashx/react-native";
 
 const Login = ({navigation}) => {
   const {setUser, setUserToken, setDashXToken} = useContext(AppContext);
@@ -42,10 +43,15 @@ const Login = ({navigation}) => {
   const storeDetails = token => {
     //TODO Store DashX token
     let data = jwt_decode(token);
+    const dashxToken = data.dashx_token;
 
     setUser(data.user);
     setUserToken(token);
-    setDashXToken(data.dashx_token);
+    setDashXToken(dashxToken);
+
+    DashX.setIdentity(data.user.id, dashxToken);
+    DashX.track('Login Succeeded');
+    DashX.subscribe();
   };
 
   const logIn = async () => {
@@ -62,7 +68,9 @@ const Login = ({navigation}) => {
       const token = response.data.token;
       storeDetails(token);
     } catch (error) {
+      DashX.track('Login Failed');
       setIsModalVisible(false);
+
       if (error?.response?.status === 401) {
         showToast('Incorrect email or password');
       } else {
