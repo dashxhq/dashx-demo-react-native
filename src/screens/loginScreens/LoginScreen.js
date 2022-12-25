@@ -10,6 +10,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import DashX from '@dashx/react-native';
+
 import Button from '../../components/Button';
 import ErrorMessage from '../../components/ErrorMessage';
 import Header from '../../components/Header';
@@ -19,7 +21,6 @@ import validate from '../../components/validator';
 import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
 import AppContext from '../../useContext/AppContext';
 import {BASE_URL} from '../../utils/ApiClient';
-import DashX from "@dashx/react-native";
 
 const Login = ({navigation}) => {
   const {setUser, setUserToken, setDashXToken} = useContext(AppContext);
@@ -43,13 +44,13 @@ const Login = ({navigation}) => {
   const storeDetails = token => {
     //TODO Store DashX token
     let data = jwt_decode(token);
-    const dashxToken = data.dashx_token;
+    const dashXToken = data.dashx_token;
 
     setUser(data.user);
     setUserToken(token);
-    setDashXToken(dashxToken);
+    setDashXToken(dashXToken);
 
-    DashX.setIdentity(data.user.id, dashxToken);
+    DashX.setIdentity(data.user.id, dashXToken);
     DashX.track('Login Succeeded');
     DashX.subscribe();
   };
