@@ -6,7 +6,9 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
+import DashX from '@dashx/react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import Button from '../../components/Button';
@@ -39,6 +41,8 @@ const ContactUsScreen = ({navigation}) => {
 
   const contactUs = async () => {
     setIsModalVisible(true);
+
+    DashX.identify({name, email});
 
     await APIPost({
       endUrl: 'contact',
