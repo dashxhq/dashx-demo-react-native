@@ -42,7 +42,7 @@ const ContactUsScreen = ({navigation}) => {
   const contactUs = async () => {
     setIsModalVisible(true);
 
-    DashX.identify({ name, email });
+    DashX.identify({name, email});
 
     await APIPost({
       endUrl: 'contact',
