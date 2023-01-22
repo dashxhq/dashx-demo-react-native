@@ -3,7 +3,6 @@ import jwt_decode from 'jwt-decode';
 import React, {useContext, useEffect, useState} from 'react';
 import {
   Keyboard,
-  ScrollView,
   StyleSheet,
   Text,
   ToastAndroid,
@@ -11,6 +10,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import DashX from '@dashx/react-native';
+
 import Button from '../../components/Button';
 import ErrorMessage from '../../components/ErrorMessage';
 import Header from '../../components/Header';
@@ -43,10 +44,15 @@ const Login = ({navigation}) => {
   const storeDetails = token => {
     //TODO Store DashX token
     let data = jwt_decode(token);
+    const dashXToken = data.dashx_token;
 
     setUser(data.user);
     setUserToken(token);
-    setDashXToken(data.dashx_token);
+    setDashXToken(dashXToken);
+
+    DashX.setIdentity(data.user.id, dashXToken);
+    DashX.track('Login Succeeded');
+    DashX.subscribe();
   };
 
   const logIn = async () => {
@@ -63,7 +69,9 @@ const Login = ({navigation}) => {
       const token = response.data.token;
       storeDetails(token);
     } catch (error) {
+      DashX.track('Login Failed');
       setIsModalVisible(false);
+
       if (error?.response?.status === 401) {
         showToast('Incorrect email or password');
       } else {
@@ -138,6 +146,7 @@ const Login = ({navigation}) => {
           <ErrorMessage message={errorMessage.password} />
           <Button
             onPress={() => {
+              Keyboard.dismiss();
               validateAndPerformLogin();
             }}
             backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}

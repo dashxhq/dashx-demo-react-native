@@ -65,7 +65,7 @@ const HomeScreen = () => {
           }}
           textColor={'white'}
           text={'Add Post'}
-          size={20}
+          size={16}
         />
       </View>
       {showDataRefreshView && <RefreshIndicatorView />}

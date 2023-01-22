@@ -41,7 +41,7 @@ function App() {
       await DashX.configure({
         baseURI: 'https://api.dashx-staging.com/graphql',
         targetEnvironment: 'staging',
-        publicKey: 'TLy2w3kxf8ePXEyEjTepcPiq',
+        publicKey: 'ft3tP2wJlQB5NSdYrjU8UylH',
       });
 
       setIsProcessed(true);

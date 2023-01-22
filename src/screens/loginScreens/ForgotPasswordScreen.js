@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Keyboard,
   StyleSheet,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -67,18 +66,16 @@ export default function ForgotPasswordScreen({navigation}) {
               error={errorMessage}
               keyboardType={'email-address'}
               onFocus={() => {
-                setErrorMessage(prev => {
-                  return {
-                    ...prev,
-                    email: false,
-                  };
+                setErrorMessage(() => {
+                  return false;
                 });
               }}
             />
             <ErrorMessage message={errorMessage} />
             <Button
               onPress={() => {
-                Keyboard.dismiss(), validateAndInvokeForgotPassword();
+                Keyboard.dismiss();
+                validateAndInvokeForgotPassword();
               }}
               backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
               textColor={'white'}
