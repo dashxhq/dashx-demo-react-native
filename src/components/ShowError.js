@@ -3,7 +3,7 @@ import {View, Text, StyleSheet} from 'react-native';
 
 const ShowError = ({message}) => {
   return message === false || message === true ? (
-    <View></View>
+    <View />
   ) : (
     <Text style={styles.text}>{message}</Text>
   );
