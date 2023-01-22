@@ -102,7 +102,7 @@ export const CreatePostModal = ({visible, dismissModal}) => {
       setShowActivityIndicatorVideo(false);
       showToast('Asset uploaded');
     } catch (error) {
-      showToast(error);
+      showToast(error.message);
     }
   };
 

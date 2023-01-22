@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Image, Platform} from 'react-native';
+import {Image, Platform} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/bottomTabScreens/HomeScreen';
 import StoreScreen from '../screens/bottomTabScreens/StoreScreen';

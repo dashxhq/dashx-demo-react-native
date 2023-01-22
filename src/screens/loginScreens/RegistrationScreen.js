@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   Keyboard,
-  ScrollView,
   StyleSheet,
-  ToastAndroid,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -166,7 +164,10 @@ export default function RegistrationScreen({navigation}) {
           />
           <ErrorMessage message={errorMessage.password} />
           <Button
-            onPress={validateAndRegister}
+            onPress={() => {
+              Keyboard.dismiss();
+              validateAndRegister();
+            }}
             backgroundColor={BUTTON_BACKGROUND_COLOR_PRIMARY}
             textColor={'white'}
             text={'Register'}

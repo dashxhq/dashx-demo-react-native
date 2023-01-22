@@ -1,5 +1,4 @@
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -39,13 +38,11 @@ export default MoreScreen;
 const ButtonView = ({text, onPress}) => {
   return (
     <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.text}>{text}</Text>
-        <Image
-          source={require('../../assets/disclosure.png')}
-          style={styles.disclosureImageStyle}
-        />
-      </TouchableOpacity>
+      <View style={{marginHorizontal: 20}}>
+        <TouchableOpacity style={styles.button} onPress={onPress}>
+          <Text style={styles.text}>{text}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -63,11 +60,7 @@ const styles = StyleSheet.create({
   button: {
     borderWidth: 1,
     borderColor: 'lightgray',
-    borderLeftWidth: 0,
-    borderRightWidth: 0,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    borderRadius: 5,
     alignItems: 'center',
   },
   text: {
