@@ -1,9 +1,10 @@
-import {Text, View, Switch, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import Button from '../../components/Button';
 import DashX from '@dashx/react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, View, Switch, StyleSheet } from 'react-native';
+
+import Button from '../../components/Button';
 import ModalView from '../../components/Modal';
-import {showToast} from '../../utils/LocalStorage';
+import { showToast } from '../../utils/LocalStorage';
 
 const Settings = () => {
   const [createPostEnable, setCreatePostEnable] = useState(false);
@@ -24,11 +25,11 @@ const Settings = () => {
     })();
   }, []);
 
-  const toggleSwitch = text => {
+  const toggleSwitch = (text) => {
     if (text === 'createPost') {
-      setCreatePostEnable(previousState => !previousState);
+      setCreatePostEnable((previousState) => !previousState);
     } else {
-      setCreateBookmarksEnable(previousState => !previousState);
+      setCreateBookmarksEnable((previousState) => !previousState);
     }
   };
 
@@ -36,8 +37,8 @@ const Settings = () => {
     if (bookmarks !== createBookmarksEnable || posts !== createPostEnable) {
       setVisible(true);
       await DashX.saveStoredPreferences({
-        'new-bookmark': {enabled: createBookmarksEnable},
-        'new-post': {enabled: createPostEnable},
+        'new-bookmark': { enabled: createBookmarksEnable },
+        'new-post': { enabled: createPostEnable },
       });
       setBookmarks(createBookmarksEnable);
       setPosts(createPostEnable);
@@ -56,7 +57,7 @@ const Settings = () => {
     <View style={styles.container}>
       <ModalView visible={visible} />
       <View style={styles.bookmarksAndPostView}>
-        <View style={{flex: 9}}>
+        <View style={{ flex: 9 }}>
           <Text style={styles.titleText}>When someone creates a post</Text>
           <Text style={styles.subtitleText}>
             This will send a notification when someone creates a post
@@ -64,15 +65,15 @@ const Settings = () => {
         </View>
         <View style={styles.toggle}>
           <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
             onValueChange={() => toggleSwitch('createPost')}
             value={createPostEnable}
           />
         </View>
       </View>
-      <View style={styles.horizontalLine}></View>
+      <View style={styles.horizontalLine} />
       <View style={styles.bookmarksAndPostView}>
-        <View style={{flex: 9}}>
+        <View style={{ flex: 9 }}>
           <Text style={styles.titleText}>When someone bookmarks a post</Text>
           <Text style={styles.subtitleText}>
             This will send a notification when someone bookmarks a post
@@ -80,7 +81,7 @@ const Settings = () => {
         </View>
         <View style={styles.toggle}>
           <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
             onValueChange={() => toggleSwitch('createBookmarks')}
             value={createBookmarksEnable}
           />
@@ -91,7 +92,8 @@ const Settings = () => {
           flexDirection: 'row',
           justifyContent: 'flex-end',
           marginTop: 20,
-        }}>
+        }}
+      >
         <Button
           onPress={handleCancel}
           text={'Cancel'}

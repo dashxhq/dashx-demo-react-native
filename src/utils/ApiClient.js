@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {getStoredValueForKey, showToast} from './LocalStorage';
+import { getStoredValueForKey, showToast } from './LocalStorage';
 
 export const BASE_URL = 'https://node.dashxdemo.com';
 
@@ -36,7 +36,7 @@ const processNetworkError = (error, setIsModalVisible) => {
   throw error;
 };
 
-export const APIGet = async ({endUrl, headers}) => {
+export const APIGet = async ({ endUrl, headers }) => {
   const finalHeaders = await normalizedHeaders(headers);
   try {
     const response = await axios({
@@ -72,7 +72,7 @@ const nonGetMethod = async ({
   }
 };
 
-export const APIPut = async ({endUrl, dataObject, headers}) => {
+export const APIPut = async ({ endUrl, dataObject, headers }) => {
   return await nonGetMethod({
     method: 'PUT',
     endUrl,

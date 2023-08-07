@@ -1,5 +1,5 @@
 import DashX from '@dashx/react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -10,16 +10,16 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {FilePickerActionSheet} from '../../components/ActionSheet';
+import { FilePickerActionSheet } from '../../components/ActionSheet';
 import Button from '../../components/Button';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import ShowError from '../../components/ShowError';
 import validate from '../../components/validator';
-import {APIGet, APIPatch, EXTERNAL_COLUMN_ID} from '../../utils/ApiClient';
-import {showToast} from '../../utils/LocalStorage';
+import { APIGet, APIPatch, EXTERNAL_COLUMN_ID } from '../../utils/ApiClient';
+import { showToast } from '../../utils/LocalStorage';
 
-const Profile = ({navigation}) => {
+const Profile = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState({
     email: false,
     first_name: false,
@@ -51,8 +51,8 @@ const Profile = ({navigation}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateField = fieldKey => fieldValue => {
-    setUser(old => ({
+  const updateField = (fieldKey) => (fieldValue) => {
+    setUser((old) => ({
       ...old,
       [fieldKey]: fieldValue,
     }));
@@ -67,7 +67,7 @@ const Profile = ({navigation}) => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        avatar: {url: user.avatar.url},
+        avatar: { url: user.avatar.url },
       },
       setIsModalVisible,
     });
@@ -82,7 +82,7 @@ const Profile = ({navigation}) => {
     let count = 0;
     for (let key in errorMessage) {
       let validationResponse = validate(key, user[key]);
-      setErrorMessage(prev => {
+      setErrorMessage((prev) => {
         return {
           ...prev,
           [key]: validationResponse,
@@ -100,7 +100,7 @@ const Profile = ({navigation}) => {
     }
   };
 
-  const onPickAvatarImage = async pickedImage => {
+  const onPickAvatarImage = async (pickedImage) => {
     setAvatarImage(pickedImage.uri);
     setDisplayActionSheet(false);
     setFileUploadProgress(true);
@@ -113,7 +113,10 @@ const Profile = ({navigation}) => {
 
       setFileUploadProgress(false);
 
-      setUser(oldUser => ({...(oldUser || {}), avatar: response?.data?.asset}));
+      setUser((oldUser) => ({
+        ...(oldUser || {}),
+        avatar: response?.data?.asset,
+      }));
 
       showToast('Asset uploaded');
     } catch (error) {
@@ -149,7 +152,7 @@ const Profile = ({navigation}) => {
             error={errorMessage.first_name}
             autoCapitalize={'words'}
             onFocus={() => {
-              setErrorMessage(prev => {
+              setErrorMessage((prev) => {
                 return {
                   ...prev,
                   first_name: true,
@@ -164,7 +167,7 @@ const Profile = ({navigation}) => {
             error={errorMessage.last_name}
             autoCapitalize={'words'}
             onFocus={() => {
-              setErrorMessage(prev => {
+              setErrorMessage((prev) => {
                 return {
                   ...prev,
                   last_name: true,
@@ -179,7 +182,7 @@ const Profile = ({navigation}) => {
             error={errorMessage.email}
             keyboardType={'email-address'}
             onFocus={() => {
-              setErrorMessage(prev => {
+              setErrorMessage((prev) => {
                 return {
                   ...prev,
                   email: true,
@@ -204,7 +207,7 @@ const Profile = ({navigation}) => {
   );
 };
 
-const AvatarView = ({avatarImage, onPress, showLoader, ...rest}) => {
+const AvatarView = ({ avatarImage, onPress, showLoader, ...rest }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.avatar} {...rest}>
       <Image

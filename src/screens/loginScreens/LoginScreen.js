@@ -1,6 +1,6 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -18,12 +18,12 @@ import Header from '../../components/Header';
 import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import validate from '../../components/validator';
-import {BUTTON_BACKGROUND_COLOR_PRIMARY} from '../../styles/global';
+import { BUTTON_BACKGROUND_COLOR_PRIMARY } from '../../styles/global';
 import AppContext from '../../useContext/AppContext';
-import {BASE_URL} from '../../utils/ApiClient';
+import { BASE_URL } from '../../utils/ApiClient';
 
-const Login = ({navigation}) => {
-  const {setUser, setUserToken, setDashXToken} = useContext(AppContext);
+const Login = ({ navigation }) => {
+  const { setUser, setUserToken, setDashXToken } = useContext(AppContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState();
   const [errorMessage, setErrorMessage] = useState({
@@ -34,23 +34,22 @@ const Login = ({navigation}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    setValidation({email: email, password: password});
+    setValidation({ email: email, password: password });
   }, [email, password]);
 
-  const showToast = responseData => {
+  const showToast = (responseData) => {
     ToastAndroid.show(responseData, ToastAndroid.SHORT);
   };
 
-  const storeDetails = token => {
+  const storeDetails = ({ token, dashx_token: dashXToken }) => {
     //TODO Store DashX token
     let data = jwt_decode(token);
-    const dashXToken = data.dashx_token;
 
     setUser(data.user);
     setUserToken(token);
     setDashXToken(dashXToken);
 
-    DashX.setIdentity(data.user.id, dashXToken);
+    DashX.setIdentity(data.user.id.toString(), dashXToken);
     DashX.track('Login Succeeded');
     DashX.subscribe();
   };
@@ -61,13 +60,11 @@ const Login = ({navigation}) => {
       const response = await axios({
         method: 'post',
         url: `${BASE_URL}/login`,
-        data: JSON.stringify({email, password}),
-        headers: {'Content-Type': 'application/json'},
+        data: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
       });
       setIsModalVisible(false);
-
-      const token = response.data.token;
-      storeDetails(token);
+      storeDetails(response.data);
     } catch (error) {
       DashX.track('Login Failed');
       setIsModalVisible(false);
@@ -84,7 +81,7 @@ const Login = ({navigation}) => {
     let count = 0;
     for (let key in validation) {
       let validationResponse = validate(key, validation[key]);
-      setErrorMessage(prev => {
+      setErrorMessage((prev) => {
         return {
           ...prev,
           [key]: validationResponse,
@@ -112,7 +109,8 @@ const Login = ({navigation}) => {
             alignSelf: 'stretch',
             marginLeft: 20,
             marginRight: 20,
-          }}>
+          }}
+        >
           <InputText
             placeholder={'Email'}
             onChangeText={setEmail}
@@ -120,7 +118,7 @@ const Login = ({navigation}) => {
             keyboardType={'email-address'}
             autoCapitalize={'none'}
             onFocus={() => {
-              setErrorMessage(prev => {
+              setErrorMessage((prev) => {
                 return {
                   ...prev,
                   email: false,
@@ -135,7 +133,7 @@ const Login = ({navigation}) => {
             secureText
             error={errorMessage.password}
             onFocus={() => {
-              setErrorMessage(prev => {
+              setErrorMessage((prev) => {
                 return {
                   ...prev,
                   password: false,
@@ -163,15 +161,17 @@ const Login = ({navigation}) => {
             borderWidth={1}
             style={styles.loginActionButton}
           />
-          <View style={{alignItems: 'center'}}>
+          <View style={{ alignItems: 'center' }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ForgotPassword')}>
+              onPress={() => navigation.navigate('ForgotPassword')}
+            >
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
-          <View style={{alignItems: 'center'}}>
+          <View style={{ alignItems: 'center' }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ContactUsScreen')}>
+              onPress={() => navigation.navigate('ContactUsScreen')}
+            >
               <Text style={styles.forgotPasswordText}>Contact Us</Text>
             </TouchableOpacity>
           </View>

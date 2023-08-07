@@ -1,16 +1,16 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {Text, View, FlatList, StyleSheet} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useState, useEffect, useContext } from 'react';
+import { Text, View, FlatList, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../components/Button';
-import {CreatePostModal} from '../../components/CreatePost';
+import { CreatePostModal } from '../../components/CreatePost';
 import AppContext from '../../useContext/AppContext';
-import {useIsFocused} from '@react-navigation/native';
-import {getAllPosts} from '../../utils/ApiClient';
-import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
-import {PostsList} from '../../components/Post';
+import { useIsFocused } from '@react-navigation/native';
+import { getAllPosts } from '../../utils/ApiClient';
+import { RefreshIndicatorView } from '../../components/RefreshIndicatorView';
+import { PostsList } from '../../components/Post';
 
 const HomeScreen = () => {
-  const {userToken, posts, setPosts} = useContext(AppContext);
+  const { userToken, posts, setPosts } = useContext(AppContext);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [showDataRefreshView, setShowDataRefreshView] = useState(false);
   const isFocused = useIsFocused();
@@ -26,23 +26,23 @@ const HomeScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
-  const didBeginToggleBookmark = async item => {
+  const didBeginToggleBookmark = async (item) => {
     // Optimistically update posts
-    setPosts(oldPosts =>
-      oldPosts.map(post => (post.id === item.id ? item : post)),
+    setPosts((oldPosts) =>
+      oldPosts.map((post) => (post.id === item.id ? item : post)),
     );
   };
 
   const didFinishToggleBookmark = async (item, errorOccurred) => {
     // Update the posts in case of error to revert to previous state
     if (errorOccurred) {
-      setPosts(oldPosts =>
-        oldPosts.map(post => (post.id === item.id ? item : post)),
+      setPosts((oldPosts) =>
+        oldPosts.map((post) => (post.id === item.id ? item : post)),
       );
     }
   };
 
-  const dismissCreatePostModal = async postCreated => {
+  const dismissCreatePostModal = async (postCreated) => {
     setShowCreatePostModal(false);
 
     if (postCreated) {
@@ -69,11 +69,11 @@ const HomeScreen = () => {
         />
       </View>
       {showDataRefreshView && <RefreshIndicatorView />}
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <FlatList
           data={posts}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => (
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
             <PostsList
               item={item}
               didBeginToggleBookmark={didBeginToggleBookmark}

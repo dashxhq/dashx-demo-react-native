@@ -5,17 +5,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import AppContext from '../../useContext/AppContext';
 
-const MoreScreen = ({navigation}) => {
-  const {setUser} = useContext(AppContext);
+const MoreScreen = ({ navigation }) => {
+  const { setUser } = useContext(AppContext);
 
   const performLogout = () => {
     setUser();
   };
 
-  const navigateToScreen = text => {
+  const navigateToScreen = (text) => {
     navigation.navigate(text);
   };
 
@@ -35,10 +35,10 @@ const MoreScreen = ({navigation}) => {
 
 export default MoreScreen;
 
-const ButtonView = ({text, onPress}) => {
+const ButtonView = ({ text, onPress }) => {
   return (
     <View style={styles.buttonContainer}>
-      <View style={{marginHorizontal: 20}}>
+      <View style={{ marginHorizontal: 20 }}>
         <TouchableOpacity style={styles.button} onPress={onPress}>
           <Text style={styles.text}>{text}</Text>
         </TouchableOpacity>
