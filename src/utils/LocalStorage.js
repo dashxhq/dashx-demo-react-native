@@ -11,9 +11,9 @@ export const showToast = (text) => {
 
 export const storeValueForKey = (key, value) => {
   if (value) {
-    AsyncStorage.setItem(key, value);
+    return AsyncStorage.setItem(key, value);
   } else {
-    AsyncStorage.removeItem(key);
+    return AsyncStorage.removeItem(key);
   }
 };
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
+
 import BillingScreen from '../screens/bottomTabScreens/BillingScreen';
 import ProfileScreen from '../screens/bottomTabScreens/ProfileScreen';
 import SettingsScreen from '../screens/bottomTabScreens/SettingsScreen';
@@ -10,11 +11,11 @@ const Stack = createStackNavigator();
 const HomeStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Group screenOptions={{presentation: 'card'}}>
+      <Stack.Group screenOptions={{ presentation: 'card' }}>
         <Stack.Screen
           name="TabsScreen"
           component={TabsScreen}
-          options={{headerShown: false, headerTitle: 'Home'}}
+          options={{ headerShown: false, headerTitle: 'Home' }}
         />
         <Stack.Screen name="Billing" component={BillingScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />

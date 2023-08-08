@@ -1,15 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import DashX from '@dashx/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { LogBox, StatusBar } from 'react-native';
-import DashX from '@dashx/react-native';
 
 import HomeStack from './src/routes/HomeStack';
-import Navigator from './src/routes/loginStack';
+import LoginStack from './src/routes/loginStack';
 import AppContext from './src/useContext/AppContext';
 import {
   getStoredValueForKey,
   storeValueForKey,
 } from './src/utils/LocalStorage';
+
+DashX.setLogLevel(2);
 
 DashX.configure({
   baseURI: 'https://api.dashx-staging.com/graphql',
@@ -24,20 +26,24 @@ function App() {
   const [user, updateUser] = useState();
   const [userToken, updateUserToken] = useState('');
   const [, updateDashXToken] = useState('');
+
   const isLoggedIn = useMemo(() => !!user, [user]);
 
-  const setDashXToken = (token) => {
-    storeValueForKey('dashXToken', token);
+  const setDashXToken = async (token) => {
+    await storeValueForKey('dashXToken', token);
     updateDashXToken(token);
   };
 
-  const setUserToken = (token) => {
-    storeValueForKey('userToken', token);
+  const setUserToken = async (token) => {
+    await storeValueForKey('userToken', token);
     updateUserToken(token);
   };
 
-  const setUser = (localUser) => {
-    storeValueForKey('user', localUser ? JSON.stringify(localUser) : null);
+  const setUser = async (localUser) => {
+    await storeValueForKey(
+      'user',
+      localUser ? JSON.stringify(localUser) : null,
+    );
     updateUser(localUser);
   };
 
@@ -71,7 +77,7 @@ function App() {
           barStyle="light-content"
         />
         {isProcessed && isLoggedIn && <HomeStack />}
-        {isProcessed && !isLoggedIn && <Navigator />}
+        {isProcessed && !isLoggedIn && <LoginStack />}
       </NavigationContainer>
     </AppContext.Provider>
   );

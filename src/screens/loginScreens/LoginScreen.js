@@ -41,21 +41,21 @@ const Login = ({ navigation }) => {
     ToastAndroid.show(responseData, ToastAndroid.SHORT);
   };
 
-  const storeDetails = ({ token, dashx_token: dashXToken }) => {
+  const storeDetails = async ({ token, dashx_token: dashXToken }) => {
     //TODO Store DashX token
     let data = jwt_decode(token);
 
-    setUser(data.user);
-    setUserToken(token);
-    setDashXToken(dashXToken);
-
     DashX.setIdentity(data.user.id.toString(), dashXToken);
-    DashX.track('Login Succeeded');
     DashX.subscribe();
+
+    await setUserToken(token);
+    await setDashXToken(dashXToken);
+    await setUser(data.user);
   };
 
   const logIn = async () => {
     setIsModalVisible(true);
+
     try {
       const response = await axios({
         method: 'post',
@@ -65,9 +65,11 @@ const Login = ({ navigation }) => {
       });
 
       setIsModalVisible(false);
-      storeDetails(response.data);
+      await storeDetails(response.data);
+      DashX.track('Login Succeeded');
     } catch (error) {
       DashX.track('Login Failed');
+
       setIsModalVisible(false);
 
       if (error?.response?.status === 401) {

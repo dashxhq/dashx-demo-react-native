@@ -22,16 +22,15 @@ const normalizedHeaders = async (headers = {}) => {
   };
 };
 
-const processNetworkError = (error, setIsModalVisible) => {
-  // setIsModalVisible(false);
-  // if (error?.response?.status === 500) {
-  //   showToast('Internal server error');
-  // }
-  // if (error?.response?.status === 409) {
-  //   showToast('Email already exist');
-  // } else {
-  //   showToast('Network error');
-  // }
+const processNetworkError = (error) => {
+  if (error?.response?.status === 500) {
+    showToast('Internal server error');
+  }
+  if (error?.response?.status === 409) {
+    showToast('Email already exist');
+  } else {
+    showToast('Network error');
+  }
 
   throw error;
 };

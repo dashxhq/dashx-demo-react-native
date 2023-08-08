@@ -8,9 +8,10 @@
 import Foundation
 import UIKit
 import React
+import DashXReactNative
 
 @UIApplicationMain
-class AppDelegate: RCTAppDelegate {
+class AppDelegate: DashXRCTAppDelegate {
     override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
       self.moduleName = "dashx"
       self.initialProps = [:]

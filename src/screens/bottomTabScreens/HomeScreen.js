@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, FlatList, StyleSheet } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+
+import AppContext from '../../useContext/AppContext';
 import Button from '../../components/Button';
 import { CreatePostModal } from '../../components/CreatePost';
-import AppContext from '../../useContext/AppContext';
-import { useIsFocused } from '@react-navigation/native';
 import { getAllPosts } from '../../utils/ApiClient';
-import { RefreshIndicatorView } from '../../components/RefreshIndicatorView';
 import { PostsList } from '../../components/Post';
+import { RefreshIndicatorView } from '../../components/RefreshIndicatorView';
 
 const HomeScreen = () => {
   const { userToken, posts, setPosts } = useContext(AppContext);
