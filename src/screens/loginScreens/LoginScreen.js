@@ -63,6 +63,7 @@ const Login = ({ navigation }) => {
         data: JSON.stringify({ email, password }),
         headers: { 'Content-Type': 'application/json' },
       });
+
       setIsModalVisible(false);
       storeDetails(response.data);
     } catch (error) {
