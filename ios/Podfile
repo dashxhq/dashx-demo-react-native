@@ -44,5 +44,6 @@ target 'dashx' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 
-  pod 'DashX', :path => '../../dashx-ios'
+  # Can be used to test against the local dashx-ios sdk
+  # pod 'DashX', :path => '../../dashx-ios'
 end
