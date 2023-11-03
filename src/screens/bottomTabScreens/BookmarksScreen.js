@@ -1,10 +1,10 @@
-import {useIsFocused} from '@react-navigation/core';
-import React, {useEffect, useState} from 'react';
-import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {PostsList} from '../../components/Post';
-import {RefreshIndicatorView} from '../../components/RefreshIndicatorView';
-import {APIGet} from '../../utils/ApiClient';
+import { useIsFocused } from '@react-navigation/core';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { PostsList } from '../../components/Post';
+import { RefreshIndicatorView } from '../../components/RefreshIndicatorView';
+import { APIGet } from '../../utils/ApiClient';
 
 const BookmarksScreen = () => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
@@ -28,17 +28,17 @@ const BookmarksScreen = () => {
     setShowDataRefreshView(false);
   };
 
-  const didBeginToggleBookmark = async item => {
+  const didBeginToggleBookmark = async (item) => {
     // Optimistically update posts
-    setBookmarkedPosts(oldPosts =>
-      oldPosts.filter(post => post.id !== item.id),
+    setBookmarkedPosts((oldPosts) =>
+      oldPosts.filter((post) => post.id !== item.id),
     );
   };
 
   const didFinishToggleBookmark = async (item, errorOccurred) => {
     // Re-add the post to bookmarks in case toggle failed
     if (errorOccurred) {
-      setBookmarkedPosts(oldPosts => [...oldPosts, item]);
+      setBookmarkedPosts((oldPosts) => [...oldPosts, item]);
     }
   };
 
@@ -52,14 +52,14 @@ const BookmarksScreen = () => {
         {!showDataRefreshView && bookmarkedPosts.length === 0 ? (
           <View style={styles.bookmarksEmptyView}>
             <Image source={require('../../assets/info.png')} />
-            <Text style={{...styles.text, color: 'black'}}>No bookmarks</Text>
+            <Text style={{ ...styles.text, color: 'black' }}>No bookmarks</Text>
             <Text style={styles.text}>Nothing to see here.</Text>
           </View>
         ) : (
           <View style={styles.bookmarksView}>
             <FlatList
               data={bookmarkedPosts}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <PostsList
                   item={item}
                   didBeginToggleBookmark={didBeginToggleBookmark}

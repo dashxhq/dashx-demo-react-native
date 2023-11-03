@@ -1,4 +1,4 @@
-import {PermissionsAndroid, Platform} from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 export const checkStorageReadPermission = async () => {
   if (Platform.OS === 'android') {

@@ -1,6 +1,6 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import {globalStyles} from '../../styles/global';
+import { globalStyles } from '../../styles/global';
 
 const StoreScreen = () => {
   return (

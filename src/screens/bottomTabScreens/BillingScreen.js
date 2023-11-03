@@ -1,10 +1,10 @@
-import {Text, View} from 'react-native';
+import { Text, View } from 'react-native';
 import React from 'react';
-import {globalStyles} from '../../styles/global';
+import { globalStyles } from '../../styles/global';
 
 const Billing = () => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View style={globalStyles.container}>
         <Text>Billing</Text>
       </View>

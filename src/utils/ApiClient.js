@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {getStoredValueForKey, showToast} from './LocalStorage';
+import { getStoredValueForKey, showToast } from './LocalStorage';
 
 export const BASE_URL = 'https://node.dashxdemo.com';
 
@@ -22,8 +22,7 @@ const normalizedHeaders = async (headers = {}) => {
   };
 };
 
-const processNetworkError = (error, setIsModalVisible) => {
-  setIsModalVisible(false);
+const processNetworkError = (error) => {
   if (error?.response?.status === 500) {
     showToast('Internal server error');
   }
@@ -36,7 +35,7 @@ const processNetworkError = (error, setIsModalVisible) => {
   throw error;
 };
 
-export const APIGet = async ({endUrl, headers}) => {
+export const APIGet = async ({ endUrl, headers }) => {
   const finalHeaders = await normalizedHeaders(headers);
   try {
     const response = await axios({
@@ -72,7 +71,7 @@ const nonGetMethod = async ({
   }
 };
 
-export const APIPut = async ({endUrl, dataObject, headers}) => {
+export const APIPut = async ({ endUrl, dataObject, headers }) => {
   return await nonGetMethod({
     method: 'PUT',
     endUrl,

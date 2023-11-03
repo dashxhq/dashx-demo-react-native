@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import moment from 'moment';
-import {APIPut} from '../utils/ApiClient';
+import { APIPut } from '../utils/ApiClient';
 import Video from 'react-native-video';
-import {ImageAndVideoModal} from './ImageAndVideoModal';
+import { ImageAndVideoModal } from './ImageAndVideoModal';
 
 export const PostsList = ({
   item,
@@ -16,7 +16,7 @@ export const PostsList = ({
   const toggleBookmark = async () => {
     // Temporarily set the bookmarked_at field to optimistically update the UI
     const bookmarked_at = item.bookmarked_at ? null : moment().toISOString();
-    didBeginToggleBookmark?.({...item, bookmarked_at});
+    didBeginToggleBookmark?.({ ...item, bookmarked_at });
 
     try {
       await APIPut({
@@ -30,7 +30,7 @@ export const PostsList = ({
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <View style={styles.imageView}>
@@ -40,7 +40,7 @@ export const PostsList = ({
             />
           </View>
 
-          <View style={{flex: 0.8}}>
+          <View style={{ flex: 0.8 }}>
             <Text style={styles.nameText}>
               {item.user.first_name} {item.user.last_name}
             </Text>
@@ -53,7 +53,8 @@ export const PostsList = ({
                 marginTop: 5,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-              }}>
+              }}
+            >
               <ImageAndVideoModal
                 visible={modal}
                 setModal={setModal}
@@ -67,10 +68,11 @@ export const PostsList = ({
                       mediaType: 'image',
                       uri: item?.image?.url,
                     });
-                  }}>
+                  }}
+                >
                   <Image
-                    style={{width: 70, height: 100}}
-                    source={{uri: item?.image?.url}}
+                    style={{ width: 70, height: 100 }}
+                    source={{ uri: item?.image?.url }}
                   />
                 </TouchableOpacity>
               )}
@@ -82,19 +84,21 @@ export const PostsList = ({
                       mediaType: 'video',
                       uri: item?.video?.url,
                     });
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       flex: 1,
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
+                    }}
+                  >
                     <Video
                       style={{
                         width: 70,
                         height: 100,
                       }}
-                      source={{uri: item?.video?.url}}
+                      source={{ uri: item?.video?.url }}
                     />
                     <Image
                       style={{
@@ -109,10 +113,11 @@ export const PostsList = ({
             </View>
           </View>
 
-          <View style={{flex: 0.1}}>
+          <View style={{ flex: 0.1 }}>
             <TouchableOpacity
               onPress={toggleBookmark}
-              style={styles.bookmarkButton}>
+              style={styles.bookmarkButton}
+            >
               <Image
                 style={styles.bookmarksLogo}
                 source={
