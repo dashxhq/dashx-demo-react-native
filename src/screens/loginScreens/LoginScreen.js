@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  PermissionsAndroid,
 } from 'react-native';
 import DashX from '@dashx/react-native';
 
@@ -46,11 +47,36 @@ const Login = ({ navigation }) => {
     let data = jwt_decode(token);
 
     DashX.setIdentity(data.user.id.toString(), dashXToken);
-    DashX.subscribe();
 
     await setUserToken(token);
     await setDashXToken(dashXToken);
     await setUser(data.user);
+
+    const hasNotificationsPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
+
+    if (hasNotificationsPermission) {
+      DashX.subscribe();
+    } else {
+      const requestNotificationsPermissionResult =
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+          {
+            title: 'Allow Notifications',
+            message:
+              'DashX needs notifications permission to keep you up to date!',
+            buttonPositive: 'Allow',
+          },
+        );
+
+      if (
+        requestNotificationsPermissionResult ===
+        PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        DashX.subscribe();
+      }
+    }
   };
 
   const logIn = async () => {

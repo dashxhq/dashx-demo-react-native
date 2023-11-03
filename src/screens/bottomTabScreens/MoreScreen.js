@@ -7,11 +7,13 @@ import {
 } from 'react-native';
 import React, { useContext } from 'react';
 import AppContext from '../../useContext/AppContext';
+import DashX from '@dashx/react-native';
 
 const MoreScreen = ({ navigation }) => {
   const { setUser } = useContext(AppContext);
 
   const performLogout = () => {
+    DashX.unsubscribe();
     setUser();
   };
 
