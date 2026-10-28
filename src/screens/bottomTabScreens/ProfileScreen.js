@@ -1,4 +1,3 @@
-import DashX from '@dashx/react-native';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,7 +15,12 @@ import InputText from '../../components/InputText';
 import ModalView from '../../components/Modal';
 import ShowError from '../../components/ShowError';
 import validate from '../../components/validator';
-import { APIGet, APIPatch, EXTERNAL_COLUMN_ID } from '../../utils/ApiClient';
+import {
+  APIGet,
+  APIPatch,
+  ASSET_ATTRIBUTE,
+  uploadPickedAsset,
+} from '../../utils/ApiClient';
 import { showToast } from '../../utils/LocalStorage';
 
 const Profile = ({ navigation }) => {
@@ -106,9 +110,9 @@ const Profile = ({ navigation }) => {
     setFileUploadProgress(true);
 
     try {
-      const response = await DashX.uploadExternalAsset(
+      const response = await uploadPickedAsset(
         pickedImage,
-        EXTERNAL_COLUMN_ID.avatar,
+        ASSET_ATTRIBUTE.avatar,
       );
 
       setFileUploadProgress(false);

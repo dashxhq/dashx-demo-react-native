@@ -1,13 +1,24 @@
 import axios from 'axios';
+import DashX from '@dashx/react-native';
 import { getStoredValueForKey, showToast } from './LocalStorage';
 
 export const BASE_URL = 'https://node.dashxdemo.com';
 
-export const EXTERNAL_COLUMN_ID = {
-  video: '651144a7-e821-4af7-bb2b-abb2807cf2c9',
-  image: 'f03b20a8-2375-4f8d-bfbe-ce35141abe98',
-  avatar: 'e8b7b42f-1f23-431c-b739-9de0fba3dadf',
+// DashX resource and attribute that each upload is stored against.
+export const ASSET_ATTRIBUTE = {
+  video: { resource: 'post', attribute: 'video' },
+  image: { resource: 'post', attribute: 'image' },
+  avatar: { resource: 'user', attribute: 'avatar' },
 };
+
+// Uploads a react-native-image-picker asset with DashX.uploadAsset, which
+// takes a local file path rather than a file:// URI.
+export const uploadPickedAsset = (pickedAsset, { resource, attribute }) =>
+  DashX.uploadAsset(
+    decodeURIComponent(pickedAsset.uri.replace(/^file:\/\//, '')),
+    resource,
+    attribute,
+  );
 
 const normalizedHeaders = async (headers = {}) => {
   const userToken = await getStoredValueForKey('userToken');
