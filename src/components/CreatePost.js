@@ -8,14 +8,17 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {APIPost, EXTERNAL_COLUMN_ID} from '../utils/ApiClient';
+import {
+  APIPost,
+  ASSET_ATTRIBUTE,
+  uploadPickedAsset,
+} from '../utils/ApiClient';
 import {showToast} from '../utils/LocalStorage';
 import Button from './Button';
 import InputText from './InputText';
 import ErrorMessage from './ErrorMessage';
 import validate from './validator';
 import {FilePickerActionSheet} from './ActionSheet';
-import DashX from '@dashx/react-native';
 
 export const CreatePostModal = ({visible, dismissModal}) => {
   const [newPost, setNewPost] = useState('');
@@ -79,9 +82,9 @@ export const CreatePostModal = ({visible, dismissModal}) => {
     try {
       if (mediaType === 'image') {
         setShowActivityIndicatorImage(true);
-        const response = await DashX.uploadExternalAsset(
+        const response = await uploadPickedAsset(
           pickedMedia,
-          EXTERNAL_COLUMN_ID.image,
+          ASSET_ATTRIBUTE.image,
         );
         setStorePostImage(oldUser => ({
           ...(oldUser || {}),
@@ -89,9 +92,9 @@ export const CreatePostModal = ({visible, dismissModal}) => {
         }));
       } else {
         setShowActivityIndicatorVideo(true);
-        const response = await DashX.uploadExternalAsset(
+        const response = await uploadPickedAsset(
           pickedMedia,
-          EXTERNAL_COLUMN_ID.video,
+          ASSET_ATTRIBUTE.video,
         );
         setStorePostVideo(oldUser => ({
           ...(oldUser || {}),

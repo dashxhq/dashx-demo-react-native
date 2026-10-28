@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import DashX from '@dashx/react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import { LogBox, StatusBar } from 'react-native';
 
 import HomeStack from './src/routes/HomeStack';
@@ -19,7 +22,10 @@ DashX.configure({
   publicKey: 'ft3tP2wJlQB5NSdYrjU8UylH',
 });
 
+DashX.enableLifecycleTracking();
+
 function App() {
+  const navigationRef = useNavigationContainerRef();
   const [isProcessed, setIsProcessed] = useState(false);
   const [posts, setPosts] = useState([]);
 
@@ -70,7 +76,10 @@ function App() {
         setPosts,
       }}
     >
-      <NavigationContainer>
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => DashX.trackNavigation(navigationRef)}
+      >
         <StatusBar
           translucent
           backgroundColor={'black'}
